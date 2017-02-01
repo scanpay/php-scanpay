@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Scanpay\\" : "Scanpay/client"
+            "Scanpay\\" : "Scanpay"
         }
     }
 }

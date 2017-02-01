@@ -7,7 +7,7 @@ class ScanpayClient
 
     public function __construct($apikey = '')
     {
-        // Check if lib cURL is enabled
+        // Check if libcurl is enabled
         if (!function_exists('curl_init')) {
             throw new Exception('Please install and enable php-curl.');
         }
