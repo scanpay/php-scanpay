@@ -1,7 +1,7 @@
 {
     "name": "scanpay/scanpay",
     "type": "library",
-    "description": "PHP bindings for the Scanpay API",
+    "description": "PHP client for the Scanpay API",
     "keywords": ["payments", "payment service provider", "payment gateway"],
     "homepage": "https://scanpay.dk",
     "support": {
@@ -11,11 +11,10 @@
     },
     "license": "MIT",
     "require": {
-        "php": ">=5.3.2"
+        "php": ">5.3.2",
+        "ext-curl": "*"
     },
     "autoload": {
-        "psr-4": {
-            "Scanpay\\" : "Scanpay"
-        }
+        "psr-4": { "Scanpay\\" : "lib/" }
     }
 }
