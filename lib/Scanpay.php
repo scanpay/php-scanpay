@@ -34,9 +34,7 @@ class Scanpay
             if (isset($opts['headers'])) {
                 $headers = array_merge($headers, $opts['headers']);
             }
-
-            // Let the merchant redefine the API key.
-            if (isset($opts['auth'])) {
+            if (isset($opts['auth'])) {  // redefine the API key.
                 $headers[0] = 'Authorization: Basic ' . base64_encode($opts['auth']);
             }
         }
@@ -85,7 +83,7 @@ class Scanpay
         return $resobj;
     }
 
-    public function new($data, $opts=[])
+    public function new($data, $opts=null)
     {
         $o = $this->request('/v1/new', $data, $opts);
         if (isset($o['url']) && strlen($o['url']) > 10) {
@@ -94,9 +92,9 @@ class Scanpay
         throw new \Exception('Invalid response from server');
     }
 
-    public function seq($seq)
+    public function seq($seq, $opts=null)
     {
-        $o = $this->request('/v1/seq/' . $seq, null, null);
+        $o = $this->request('/v1/seq/' . $seq, null, $opts);
         if (isset($o['seq']) && is_int($o['seq']) && isset($o['changes']) && is_array($o['changes'])) {
             return $o;
         }
