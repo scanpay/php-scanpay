@@ -1,6 +1,6 @@
 <?php namespace Scanpay;
 
-class ScanpayClient
+class Scanpay
 {
     protected $_headers;
     protected $ch;
@@ -8,9 +8,7 @@ class ScanpayClient
     public function __construct($apikey = '')
     {
         // Check if libcurl is enabled
-        if (!function_exists('curl_init')) {
-            throw new Exception('Please install and enable php-curl.');
-        }
+        if (!function_exists('curl_init')) { throw new Exception('Enable php-curl.'); }
 
         // Public cURL handle (we want to reuse connections)
         $this->ch = curl_init();
@@ -23,11 +21,10 @@ class ScanpayClient
 
         $this->_headers = array(
             'Authorization: Basic ' . base64_encode($apikey),
-            'X-Scanpay-SDK: PHP-0.9.1',
+            'X-Scanpay-SDK: PHP-1.0.0',
             'Content-Type: application/json',
         );
     }
-
 
     protected function request($url, $data, $opts)
     {
@@ -88,8 +85,7 @@ class ScanpayClient
         return $resobj;
     }
 
-
-    public function new($data, $opts = [])
+    public function new($data, $opts=[])
     {
         $o = $this->request('/v1/new', $data, $opts);
         if (isset($o['url']) && strlen($o['url']) > 10) {
@@ -97,7 +93,6 @@ class ScanpayClient
         }
         throw new \Exception('Invalid response from server');
     }
-
 
     public function seq($seq)
     {
