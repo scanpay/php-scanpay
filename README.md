@@ -39,5 +39,5 @@ $order = [
     ],
 ];
 
-print_r ($new = $scanpay->new($order));
+print_r ($newURL = $scanpay->newURL($order));
 ```

@@ -83,7 +83,7 @@ class Scanpay
         return $resobj;
     }
 
-    public function new($data, $opts=null)
+    public function newURL($data, $opts=null)
     {
         $o = $this->request('/v1/new', $data, $opts);
         if (isset($o['url']) && strlen($o['url']) > 10) {
