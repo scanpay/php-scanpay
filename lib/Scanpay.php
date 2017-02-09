@@ -4,6 +4,7 @@ class Scanpay
 {
     protected $_headers;
     protected $ch;
+    protected $apikey;
 
     public function __construct($apikey = '')
     {
@@ -24,6 +25,8 @@ class Scanpay
             'X-Scanpay-SDK: PHP-1.0.0',
             'Content-Type: application/json',
         );
+
+        $this->apikey = $apikey;
     }
 
     protected function request($url, $data, $opts)
@@ -99,6 +102,40 @@ class Scanpay
             return $o;
         }
         throw new \Exception('Invalid response from server');
+    }
+
+    public function handlePing($opts=null)
+    {
+        if (!isset($_SERVER['HTTP_X_SIGNATURE'])) {
+            throw new \Exception('missing ping signature');
+        }
+
+        $body = file_get_contents('php://input');
+        if ($body === false) {
+            throw new \Exception('unable to get ping body');
+        }
+
+        $apikey = isset($opts['auth']) ? $opts['auth'] : $this->apikey;
+        $mySig = base64_encode(hash_hmac('sha256', $body, $apikey, true));
+        if (function_exists('hash_equals')) {
+            if (!hash_equals($mySig, $_SERVER['HTTP_X_SIGNATURE'])) {
+                throw new \Exception('invalid ping signature');
+            }
+        } else if ($mySig !== $_SERVER['HTTP_X_SIGNATURE']) { 
+            throw new \Exception('invalid ping signature');
+        }
+
+        $reqobj = @json_decode($body, true);
+        if ($reqobj === null) {
+            throw new \Exception('invalid json from Scanpay server');
+        }
+
+        if (!isset($reqobj['seq']) || !is_int($reqobj['seq']) ||
+            !isset($reqobj['shopid']) || !is_int($reqobj['shopid'])) {
+            throw new \Exception('missing fields in Scanpay response');
+        }
+
+        return $reqobj;
     }
 }
 
