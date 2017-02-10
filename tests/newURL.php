@@ -58,7 +58,6 @@ $options = [
 
 try {
     print_r ($newURL = $scanpay->newURL($order, $options));
-    print_r ($seq = $scanpay->seq(0));
 } catch (Exception $e) {
     die('Caught Scanpay client exception: ' . $e->getMessage() . "\n");
 }
