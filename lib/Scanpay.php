@@ -121,7 +121,7 @@ class Scanpay
             if (!hash_equals($mySig, $_SERVER['HTTP_X_SIGNATURE'])) {
                 throw new \Exception('invalid ping signature');
             }
-        } else if ($mySig !== $_SERVER['HTTP_X_SIGNATURE']) { 
+        } else if ($mySig !== $_SERVER['HTTP_X_SIGNATURE']) {
             throw new \Exception('invalid ping signature');
         }
 
