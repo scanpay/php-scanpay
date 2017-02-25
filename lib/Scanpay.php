@@ -131,7 +131,8 @@ class Scanpay
         }
 
         if (!isset($reqobj['seq']) || !is_int($reqobj['seq']) ||
-            !isset($reqobj['shopid']) || !is_int($reqobj['shopid'])) {
+            !isset($reqobj['shopid']) || !is_int($reqobj['shopid']) ||
+            $reqobj['seq'] < 0 || $reqobj['shopid'] < 0) {
             throw new \Exception('missing fields in Scanpay response');
         }
 
