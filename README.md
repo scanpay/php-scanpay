@@ -1,6 +1,6 @@
 # Scanpay PHP Client
 
-You can sign up for a Scanpay account at https://scanpay.dk/opret
+You can sign up for a Scanpay account at [scanpay.dk/opret](https://scanpay.dk/opret).
 
 ## Requirements
 
