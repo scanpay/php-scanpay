@@ -1,6 +1,6 @@
 <?php
 ini_set('display_errors', 'On');
-require 'vendor/autoload.php';
+require dirname(__FILE__)  . '/../lib/Scanpay.php';
 
 $apikey = ' API-key ';
 $scanpay = new Scanpay\Scanpay($apikey);
@@ -10,9 +10,9 @@ $options = [
 ];
 
 try {
-    print_r ($ping = $scanpay->handlePing());
+    print_r($ping = $scanpay->handlePing());
 } catch(\Exception $e) {
-    echo 'exception: ', $e->getMessage();
+    print_r('exception: ', $e->getMessage());
 }
 
 ?>

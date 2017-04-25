@@ -69,7 +69,7 @@ class Scanpay
 
         $code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
         if ($code !== 200) {
-            throw new \Exception($result);
+            throw new \Exception(explode("\n", $result)[0]);
         }
 
         // Decode the json response (@: surpress warnings)

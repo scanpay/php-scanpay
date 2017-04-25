@@ -1,6 +1,6 @@
 <?php
 ini_set('display_errors', 'On');
-require 'vendor/autoload.php';
+require dirname(__FILE__)  . '/../lib/Scanpay.php';
 
 $apikey = ' API-key ';
 $scanpay = new Scanpay\Scanpay($apikey);
@@ -57,7 +57,7 @@ $options = [
 
 
 try {
-    print_r ($newURL = $scanpay->newURL($order, $options));
+    print_r($newURL = $scanpay->newURL($order, $options));
 } catch (Exception $e) {
     die('Caught Scanpay client exception: ' . $e->getMessage() . "\n");
 }
