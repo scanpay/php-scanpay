@@ -69,19 +69,12 @@ class Scanpay
 
         $code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
         if ($code !== 200) {
-            if ($code === 403) {
-                throw new \Exception('Invalid API-key');
-            }
-            throw new \Exception('Unexpected http response code: ' . $code);
+            throw new \Exception($result);
         }
 
         // Decode the json response (@: surpress warnings)
         if (!$resobj = @json_decode($result, true)) {
             throw new \Exception('Invalid response from server');
-        }
-
-        if (isset($resobj['error'])) {
-            throw new \Exception('server returned error: ' . $resobj['error']);
         }
         return $resobj;
     }
