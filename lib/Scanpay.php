@@ -97,13 +97,17 @@ class Scanpay
         throw new \Exception('Invalid response from server');
     }
 
-    public function handlePing($opts=null)
+    public function handlePing($opts=[])
     {
-        if (!isset($_SERVER['HTTP_X_SIGNATURE'])) {
+        if (isset($opts['signature'])) {
+            $sig = $opts['signature'];
+        } else if (isset($_SERVER['HTTP_X_SIGNATURE'])) {
+            $sig = $_SERVER['HTTP_X_SIGNATURE'];
+        } else {
             throw new \Exception('missing ping signature');
         }
 
-        $body = file_get_contents('php://input');
+        $body = isset($opts['body']) ? $opts['body'] : file_get_contents('php://input');
         if ($body === false) {
             throw new \Exception('unable to get ping body');
         }
@@ -111,10 +115,10 @@ class Scanpay
         $apikey = isset($opts['auth']) ? $opts['auth'] : $this->apikey;
         $mySig = base64_encode(hash_hmac('sha256', $body, $apikey, true));
         if (function_exists('hash_equals')) {
-            if (!hash_equals($mySig, $_SERVER['HTTP_X_SIGNATURE'])) {
+            if (!hash_equals($mySig, $sig)) {
                 throw new \Exception('invalid ping signature');
             }
-        } else if ($mySig !== $_SERVER['HTTP_X_SIGNATURE']) {
+        } else if ($mySig !== $sig) {
             throw new \Exception('invalid ping signature');
         }
 
