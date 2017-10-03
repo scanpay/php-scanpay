@@ -1,70 +1,68 @@
-<?php namespace Scanpay;
+<?php
+namespace Scanpay;
 
-class Scanpay
-{
-    protected $_headers;
+class Scanpay {
+    protected $opts;
     protected $ch;
     protected $apikey;
 
-    public function __construct($apikey = '')
-    {
+    public function __construct($apikey = '') {
         // Check if libcurl is enabled
         if (!function_exists('curl_init')) { throw new \Exception('Enable php-curl.'); }
 
         // Public cURL handle (we want to reuse connections)
         $this->ch = curl_init();
 
-        curl_setopt_array($this->ch, array(
+        curl_setopt_array($this->ch, [
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => 30, // Timeout after 30s
             CURLOPT_USE_SSL => CURLUSESSL_ALL,
-        ));
+            CURLOPT_SSLVERSION => 6, // TLSv1.2
+            CURLOPT_TCP_NODELAY => 1,
+        ]);
 
-        $this->_headers = array(
-            'Authorization: Basic ' . base64_encode($apikey),
-            'X-Scanpay-SDK: PHP-1.1.0',
-            'Content-Type: application/json',
-        );
+        $this->opts = [
+            'hostname' => 'api.scanpay.dk',
+            'auth' => $apikey,
+            'headers' => [
+                'Authorization: Basic ' . base64_encode($apikey),
+                'X-SDK: PHP-1.2.0/'. PHP_VERSION,
+                'Content-Type: application/json'
+            ]
+        ];
 
         $this->apikey = $apikey;
     }
 
-    protected function request($url, $data, $opts)
-    {
-        $headers = $this->_headers;
+    protected function request($url, $opts=[], $data=null) {
+        $o = array_merge($this->opts, $opts);
 
-        if (isset($opts)) {
-            if (isset($opts['headers'])) {
-                $headers = array_merge($headers, $opts['headers']);
-            }
-            if (isset($opts['auth'])) {  // redefine the API key.
-                $headers[0] = 'Authorization: Basic ' . base64_encode($opts['auth']);
-            }
+        if (isset($opts['headers'])) {
+            $o['headers'] = array_merge($this->opts['headers'], $opts['headers']);
+        }
+        if (isset($opts['auth'])) {  // redefine the API key.
+            $o['headers'][0] = 'Authorization: Basic ' . base64_encode($opts['auth']);
         }
 
-        if (isset($data)) {
-            curl_setopt_array($this->ch, array(
-                CURLOPT_URL => 'https://api.scanpay.dk' . $url,
-                CURLOPT_HTTPHEADER => $headers,
+        if ($data !== null) {
+            curl_setopt_array($this->ch, [
+                CURLOPT_URL => 'https://' . $o['hostname'] . $url,
+                CURLOPT_HTTPHEADER => $o['headers'],
                 CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => json_encode($data),
-            ));
+                CURLOPT_POSTFIELDS => json_encode($data, JSON_UNESCAPED_SLASHES),
+            ]);
         } else {
-            curl_setopt_array($this->ch, array(
-                CURLOPT_URL => 'https://api.scanpay.dk' . $url,
-                CURLOPT_HTTPHEADER => $headers,
+            curl_setopt_array($this->ch, [
+                CURLOPT_URL => 'https://' . $o['hostname'] . $url,
+                CURLOPT_HTTPHEADER => $o['headers'],
                 CURLOPT_CUSTOMREQUEST => 'GET',
                 CURLOPT_POSTFIELDS => 0,
-            ));
+            ]);
         }
 
-        if (!$result = curl_exec($this->ch)) {
-            if ($errno = curl_errno($this->ch)) {
-                if (function_exists('curl_strerror')) { // PHP 5.5
-                    throw new \Exception(curl_strerror($errno));
-                }
-                throw new \Exception('curl_errno: ' . $errno);
-            }
+        $result = curl_exec($this->ch);
+        if (!$result) {
+            throw new \Exception(curl_strerror(curl_errno($this->ch)));
         }
 
         $code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
@@ -79,30 +77,43 @@ class Scanpay
         return $resobj;
     }
 
-    public function newURL($data, $opts=null)
-    {
-        $o = $this->request('/v1/new', $data, $opts);
-        if (isset($o['url']) && strlen($o['url']) > 10) {
-            return $o;
+    public function newURL($data, $opts=[]) {
+        $o = $this->request('/v1/new', $opts, $data);
+        if (isset($o['url']) && filter_var($o['url'], FILTER_VALIDATE_URL)) {
+            return $o['url'];
         }
         throw new \Exception('Invalid response from server');
     }
 
-    public function seq($seq, $opts=null)
-    {
-        $o = $this->request('/v1/seq/' . $seq, null, $opts);
+    public function seq($seq, $opts=[]) {
+        $o = $this->request('/v1/seq/' . $seq, $opts);
         if (isset($o['seq']) && is_int($o['seq']) && isset($o['changes']) && is_array($o['changes'])) {
             return $o;
         }
         throw new \Exception('Invalid response from server');
     }
 
-    public function handlePing($opts=[])
-    {
+    public function maxSeq($opts=[]) {
+        $o = $this->request('/v1/seq', $opts);
+        if (isset($o['seq']) && is_int($o['seq'])) {
+            return $o['seq'];
+        }
+        throw new \Exception('Invalid response from server');
+    }
+
+    public function handlePing($opts=[]) {
+        ignore_user_abort(true);
+        // TODO: Close connection and save bandwidth
+        // Notice that log_error and flush/echo wont work
+        // after fastcgi_finish_request has been called.
+        // if (function_exists('fastcgi_finish_request')) {
+        //    fastcgi_finish_request();
+        // }
+
         if (isset($opts['signature'])) {
-            $sig = $opts['signature'];
+            $signature = $opts['signature'];
         } else if (isset($_SERVER['HTTP_X_SIGNATURE'])) {
-            $sig = $_SERVER['HTTP_X_SIGNATURE'];
+            $signature = $_SERVER['HTTP_X_SIGNATURE'];
         } else {
             throw new \Exception('missing ping signature');
         }
@@ -112,28 +123,22 @@ class Scanpay
             throw new \Exception('unable to get ping body');
         }
 
-        $apikey = isset($opts['auth']) ? $opts['auth'] : $this->apikey;
-        $mySig = base64_encode(hash_hmac('sha256', $body, $apikey, true));
-        if (function_exists('hash_equals')) {
-            if (!hash_equals($mySig, $sig)) {
-                throw new \Exception('invalid ping signature');
-            }
-        } else if ($mySig !== $sig) {
+        $checksum = base64_encode(hash_hmac('sha256', $body, $this->apikey, true));
+
+        if (!hash_equals($checksum, $signature)) {
             throw new \Exception('invalid ping signature');
         }
 
-        $reqobj = @json_decode($body, true);
-        if ($reqobj === null) {
+        $obj = @json_decode($body, true);
+        if ($obj === null) {
             throw new \Exception('invalid json from Scanpay server');
         }
 
-        if (!isset($reqobj['seq']) || !is_int($reqobj['seq']) ||
-            !isset($reqobj['shopid']) || !is_int($reqobj['shopid']) ||
-            $reqobj['seq'] < 0 || $reqobj['shopid'] < 0) {
-            throw new \Exception('missing fields in Scanpay response');
+        if (isset($obj['seq']) && is_int($obj['seq']) &&
+            isset($obj['shopid']) && is_int($obj['shopid'])) {
+            return $obj;
         }
-
-        return $reqobj;
+        throw new \Exception('missing fields in Scanpay response');
     }
 }
 
