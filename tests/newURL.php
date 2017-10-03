@@ -1,9 +1,20 @@
 <?php
+/*
+    help@scanpay.dk || irc.scanpay.dk:6697 || scanpay.dk/slack
+*/
 ini_set('display_errors', 'On');
 require dirname(__FILE__)  . '/../lib/Scanpay.php';
 
-$apikey = ' API-key ';
+$apikey = '1153:YHZIUGQw6NkCIYa3mG6CWcgShnl13xuI7ODFUYuMy0j790Q6ThwBEjxfWFXwJZ0W';
 $scanpay = new Scanpay\Scanpay($apikey);
+
+$options = [
+    'auth'  =>  $apikey, // Set an API key for this request (optional)
+    'hostname' => 'api.test.scanpay.dk',
+    'headers' => [
+        'X-Cardholder-IP: 192.168.1.1',
+    ],
+];
 
 $order = [
     'orderid'    => 'a766409',
@@ -48,16 +59,8 @@ $order = [
     ],
 ];
 
-$options = [
-    'headers' => [ // Array of headers
-        'X-Cardholder-IP: 192.168.1.1',
-    ],
-    'auth'  =>  $apikey, // Overwrite the api-key (Optional)
-];
-
-
 try {
-    print_r($newURL = $scanpay->newURL($order, $options));
+    print_r($newURL = $scanpay->newURL($order, $options) . "\n");
 } catch (Exception $e) {
     die('Caught Scanpay client exception: ' . $e->getMessage() . "\n");
 }
