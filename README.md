@@ -1,10 +1,14 @@
 # Scanpay PHP Client
 
-PHP client library for the Scanpay API. You can find the documentation at [docs.scanpay.dk](https://docs.scanpay.dk/). You can create a free account at [en.scanpay.dk/signup](https://en.scanpay.dk/signup).
+PHP client library for the Scanpay API ([docs](https://docs.scanpay.dk/)). You can create a free account [here](https://en.scanpay.dk/signup).
 
 #### IRC or Slack?
 
-Do you have any questions? You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk), but why not join us on irc.scanpay.dk, Freenode #scanpay or [Slack](https://scanpay.dk/slack)? You can also use the [webchat](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1) to connect with us on Freenode.
+Do you have any questions? You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk), but why not join us on:
+
+* #scanpay on Freenode ([webchat](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1))
+* irc.scanpay.dk:6697
+* [Slack](https://scanpay.dk/slack)
 
 ## Installation
 
