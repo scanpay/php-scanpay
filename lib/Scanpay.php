@@ -23,7 +23,6 @@ class Scanpay {
 
         $this->opts = [
             'hostname' => 'api.scanpay.dk',
-            'auth' => $apikey,
             'headers' => [
                 'Authorization: Basic ' . base64_encode($apikey),
                 'X-SDK: PHP-1.2.0/'. PHP_VERSION,
@@ -38,8 +37,10 @@ class Scanpay {
         $o = array_merge($this->opts, $opts);
 
         if (isset($opts['headers'])) {
+            // array_merge is not deep. So now we need to reassign headers.
             $o['headers'] = array_merge($this->opts['headers'], $opts['headers']);
         }
+
         if (isset($opts['auth'])) {  // redefine the API key.
             $o['headers'][0] = 'Authorization: Basic ' . base64_encode($opts['auth']);
         }
