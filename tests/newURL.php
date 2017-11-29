@@ -9,11 +9,12 @@ $apikey = '1153:YHZIUGQw6NkCIYa3mG6CWcgShnl13xuI7ODFUYuMy0j790Q6ThwBEjxfWFXwJZ0W
 $scanpay = new Scanpay\Scanpay($apikey);
 
 $options = [
-    'auth'  =>  $apikey, // Set an API key for this request (optional)
     'hostname' => 'api.test.scanpay.dk',
     'headers' => [
-        'X-Cardholder-IP: 192.168.1.1',
+        'Authorization' => 'Basic ' . base64_encode($apikey),
+        'X-Cardholder-IP' => '192.168.1.1',
     ],
+    //'debug' => true,
 ];
 
 $order = [
@@ -24,12 +25,12 @@ $order = [
         [
             'name'     => 'Pink Floyd: The Dark Side Of The Moon',
             'quantity' => 2,
-            'price'    => '99.99 DKK',
+            'total'    => '199.99 DKK',
             'sku'      => 'fadf23',
         ], [
             'name'     => '巨人宏偉的帽子',
             'quantity' => 2,
-            'price'    => '420 DKK',
+            'total'    => '420 DKK',
             'sku'      => '124',
         ],
     ],
@@ -62,7 +63,7 @@ $order = [
 try {
     print_r($newURL = $scanpay->newURL($order, $options) . "\n");
 } catch (Exception $e) {
-    die('Caught Scanpay client exception: ' . $e->getMessage() . "\n");
+    die($e->getMessage() . "\n");
 }
 
 ?>
