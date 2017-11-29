@@ -1,14 +1,6 @@
 # Scanpay PHP Client
 
-PHP client library for the Scanpay API ([docs](https://docs.scanpay.dk/)). You can create a free account [here](https://en.scanpay.dk/signup).
-
-#### IRC or Slack?
-
-Do you have any questions? You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk), but why not join us on:
-
-* #scanpay on Freenode ([webchat](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1))
-* irc.scanpay.dk:6697
-* [Slack](https://scanpay.dk/slack)
+PHP client library for the Scanpay API. You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk) or chat with us on IRC: `irc.scanpay.dk:6697` or `#scanpay` at Freenode ([webchat](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1))
 
 ## Installation
 
@@ -36,11 +28,12 @@ $scanpay = new Scanpay\Scanpay(' API-key ');
 
 All methods, except `handlePing`, accept an optional per-request `options` object. You can use this to:
 
-* Set the API key for this request ([example](tests/newURL.php#L12))
+* Set the API key for this request ([example](tests/newURL.php#L14))
 * Set HTTP headers, e.g. the highly recommended `X-Cardholder-IP` ([example](tests/newURL.php#L15))
-* Change the hostname to use our test environment `api.test.scanpay.dk` ([example](tests/newURL.php#L13))
+* Change the hostname to use our test environment `api.test.scanpay.dk` ([example](tests/newURL.php#L12))
+* Enable debugging mode ([example](tests/newURL.php#L17))
 
-#### newURL(Object, Object)
+### newURL(Object, Object)
 
 Create a payment link by passing the order details ([spec](https://docs.scanpay.dk/payment-link#request-fields)) through `newURL`:
 
@@ -50,16 +43,16 @@ $order = [
         [
             'name'     => 'Pink Floyd: The Dark Side Of The Moon',
             'quantity' => 2,
-            'price'    => '99.99 DKK'
+            'total'    => '199.99 DKK'
         ]
     ]
 ];
 print_r ($URL = $scanpay->newURL($order, $options)); // returns String
 ```
 
-#### seq(Int, Object)
+### seq(Int, Object)
 
-Get an array with a number of changes since the supplied sequence number (integer):
+Get an array with a number of changes since the supplied sequence number:
 
 ```php
 $localSeq = 921;
@@ -68,15 +61,7 @@ print_r (obj.changes);
 print_r ('New local seq after applying all changes: ' . obj.seq);
 ```
 
-#### maxSeq(Object)
-
-Get the current maximum sequence number (integer):
-
-```php
-$int = $scanpay->maxSeq($options);
-```
-
-#### handlePing(Object)
+### handlePing(Object)
 
 Securely and efficiently validate pings. This method accepts an optional object with the following arguments:
 

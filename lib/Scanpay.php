@@ -2,72 +2,71 @@
 namespace Scanpay;
 
 class Scanpay {
-    protected $opts;
     protected $ch;
+    protected $headers;
     protected $apikey;
 
     public function __construct($apikey = '') {
         // Check if libcurl is enabled
-        if (!function_exists('curl_init')) { throw new \Exception('Enable php-curl.'); }
+        if (!function_exists('curl_init')) { die("ERROR: Please enable php-curl\n"); }
 
         // Public cURL handle (we want to reuse connections)
         $this->ch = curl_init();
-
         curl_setopt_array($this->ch, [
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_TIMEOUT => 30, // Timeout after 30s
+            CURLOPT_CONNECTTIMEOUT => 20,
+            CURLOPT_TIMEOUT => 20,
             CURLOPT_USE_SSL => CURLUSESSL_ALL,
             CURLOPT_SSLVERSION => 6, // TLSv1.2
-            CURLOPT_TCP_NODELAY => 1,
         ]);
+        // TODO: Expose CURLOPT
+        // curl_setopt($this->ch, CURLOPT_TCP_FASTOPEN, 1);
+        // curl_setopt($this->ch, CURLOPT_SSL_FALSESTART, 1);
 
-        $this->opts = [
-            'hostname' => 'api.scanpay.dk',
-            'headers' => [
-                'Authorization: Basic ' . base64_encode($apikey),
-                'X-SDK: PHP-1.2.0/'. PHP_VERSION,
-                'Content-Type: application/json'
-            ]
+        $this->headers = [
+            'Authorization' => 'Basic ' . base64_encode($apikey),
+            'X-SDK' => 'PHP-1.3.0/'. PHP_VERSION,
+            'Content-Type' => 'application/json',
+            'Expect' => '', // Prevent 'Expect: 100-continue' on POSTs >1024b.
         ];
-
         $this->apikey = $apikey;
     }
 
-    protected function request($url, $opts=[], $data=null) {
-        $o = array_merge($this->opts, $opts);
-
-        if (isset($opts['headers'])) {
-            // array_merge is not deep. So now we need to reassign headers.
-            $o['headers'] = array_merge($this->opts['headers'], $opts['headers']);
+    protected function httpHeaders($o=[]) {
+        $ret = [];
+        foreach($this->headers as $key => &$val) {
+            $ret[strtolower($key)] = $key . ': ' . $val;
         }
-
-        if (isset($opts['auth'])) {  // redefine the API key.
-            $o['headers'][0] = 'Authorization: Basic ' . base64_encode($opts['auth']);
+        if (isset($o['headers'])) {
+            foreach($o['headers'] as $key => &$val) {
+                $ret[strtolower($key)] = $key . ': ' . $val;
+            }
         }
-
-        if ($data !== null) {
-            curl_setopt_array($this->ch, [
-                CURLOPT_URL => 'https://' . $o['hostname'] . $url,
-                CURLOPT_HTTPHEADER => $o['headers'],
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => json_encode($data, JSON_UNESCAPED_SLASHES),
-            ]);
-        } else {
-            curl_setopt_array($this->ch, [
-                CURLOPT_URL => 'https://' . $o['hostname'] . $url,
-                CURLOPT_HTTPHEADER => $o['headers'],
-                CURLOPT_CUSTOMREQUEST => 'GET',
-                CURLOPT_POSTFIELDS => 0,
-            ]);
+        // Redefine API Key (DEPRECATED!!!)
+        if (isset($o['auth'])) {
+            $ret['authorization'] = 'Authorization: Basic ' . base64_encode($o['auth']);
         }
+        return array_values($ret);
+    }
+
+    protected function request($path, $opts=[], $data=null) {
+        $hostname = (isset($opts['hostname'])) ? $opts['hostname'] : 'api.scanpay.dk';
+
+        curl_setopt_array($this->ch, [
+            CURLOPT_URL => 'https://' . $hostname . $path,
+            CURLOPT_HTTPHEADER => $this->httpHeaders($opts),
+            CURLOPT_CUSTOMREQUEST => ($data === null) ? 'GET' : 'POST',
+            CURLOPT_POSTFIELDS => ($data === null) ? null : json_encode($data, JSON_UNESCAPED_SLASHES),
+            CURLOPT_VERBOSE => isset($opts['debug']) ? $opts['debug'] : 0,
+        ]);
 
         $result = curl_exec($this->ch);
         if (!$result) {
             throw new \Exception(curl_strerror(curl_errno($this->ch)));
         }
 
-        $code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
-        if ($code !== 200) {
+        $statusCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+        if ($statusCode !== 200) {
             throw new \Exception(explode("\n", $result)[0]);
         }
 
@@ -78,6 +77,7 @@ class Scanpay {
         return $resobj;
     }
 
+    // newURL: Create a new payment link
     public function newURL($data, $opts=[]) {
         $o = $this->request('/v1/new', $opts, $data);
         if (isset($o['url']) && filter_var($o['url'], FILTER_VALIDATE_URL)) {
@@ -86,14 +86,20 @@ class Scanpay {
         throw new \Exception('Invalid response from server');
     }
 
-    public function seq($seq, $opts=[]) {
-        $o = $this->request('/v1/seq/' . $seq, $opts);
-        if (isset($o['seq']) && is_int($o['seq']) && isset($o['changes']) && is_array($o['changes'])) {
+    // seq: Get array of changes since the reqested seqnum
+    public function seq($seqnum, $opts=[]) {
+        if (!is_numeric($seqnum)) {
+            throw new \Exception('seq argument must be an integer');
+        }
+        $o = $this->request('/v1/seq/' . $seqnum, $opts);
+        if (isset($o['seq']) && is_int($o['seq'])
+                && isset($o['changes']) && is_array($o['changes'])) {
             return $o;
         }
         throw new \Exception('Invalid response from server');
     }
 
+    // maxSeq. (DEPRECATED!!!)
     public function maxSeq($opts=[]) {
         $o = $this->request('/v1/seq', $opts);
         if (isset($o['seq']) && is_int($o['seq'])) {
@@ -102,14 +108,9 @@ class Scanpay {
         throw new \Exception('Invalid response from server');
     }
 
+    // handlePing: Convert data to JSON and validate integrity
     public function handlePing($opts=[]) {
         ignore_user_abort(true);
-        // TODO: Close connection and save bandwidth
-        // Notice that log_error and flush/echo wont work
-        // after fastcgi_finish_request has been called.
-        // if (function_exists('fastcgi_finish_request')) {
-        //    fastcgi_finish_request();
-        // }
 
         if (isset($opts['signature'])) {
             $signature = $opts['signature'];
