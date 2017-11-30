@@ -1,6 +1,6 @@
 # Scanpay PHP Client
 
-PHP client library for the Scanpay API. You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk) or chat with us on IRC: `irc.scanpay.dk:6697` or `#scanpay` at Freenode ([webchat](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1))
+PHP client library for the Scanpay API. You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk) or chat with us on `irc.scanpay.dk:6697` or `#scanpay` at Freenode ([webchat](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1))
 
 ## Installation
 
@@ -15,7 +15,7 @@ And initiate it in your project with:
 $scanpay = new Scanpay\Scanpay(' API-key ');
 ```
 
-### Manual install
+### Manual installation
 
 If you do not wish to use Composer, you can download the [latest release](https://github.com/scanpaydk/php-scanpay/releases) and include in into your project:
 
@@ -26,14 +26,9 @@ $scanpay = new Scanpay\Scanpay(' API-key ');
 
 ## Methods
 
-All methods, except `handlePing`, accept an optional per-request `options` object. You can use this to:
+Please note that all methods accept an optional per-request `options` object. You can read more about this [here](#options).
 
-* Set the API key for this request ([example](tests/newURL.php#L14))
-* Set HTTP headers, e.g. the highly recommended `X-Cardholder-IP` ([example](tests/newURL.php#L15))
-* Change the hostname to use our test environment `api.test.scanpay.dk` ([example](tests/newURL.php#L12))
-* Enable debugging mode ([example](tests/newURL.php#L17))
-
-### newURL(Object, Object)
+#### newURL(Object, Object)
 
 Create a payment link by passing the order details ([spec](https://docs.scanpay.dk/payment-link#request-fields)) through `newURL`:
 
@@ -42,7 +37,6 @@ $order = [
     'items' => [
         [
             'name'     => 'Pink Floyd: The Dark Side Of The Moon',
-            'quantity' => 2,
             'total'    => '199.99 DKK'
         ]
     ]
@@ -50,7 +44,7 @@ $order = [
 print_r ($URL = $scanpay->newURL($order, $options)); // returns String
 ```
 
-### seq(Int, Object)
+#### seq(Int, Object)
 
 Get an array with a number of changes since the supplied sequence number:
 
@@ -61,7 +55,7 @@ print_r (obj.changes);
 print_r ('New local seq after applying all changes: ' . obj.seq);
 ```
 
-### handlePing(Object)
+#### handlePing(Object)
 
 Securely and efficiently validate pings. This method accepts an optional object with the following arguments:
 
@@ -73,6 +67,16 @@ Securely and efficiently validate pings. This method accepts an optional object 
 print_r ($json = $scanpay->handlePing());
 print_r ($json.seq);
 ```
+
+## Options
+
+All methods, except `handlePing`, accept an optional per-request `options` object. You can use this to:
+
+* Set the API key for this request ([example](tests/newURL.php#L14))
+* Set HTTP headers, e.g. the highly recommended `X-Cardholder-IP` ([example](tests/newURL.php#L15))
+* Change the hostname to use our test environment `api.test.scanpay.dk` ([example](tests/newURL.php#L12))
+* Enable debugging mode ([example](tests/seq.php#L13))
+* Override cURL options with [`CURLOPT_*`](http://php.net/manual/en/function.curl-setopt.php) parameters ([example](tests/newURL.php#L17-L21)).
 
 ## Compatibility table
 

@@ -14,13 +14,17 @@ $options = [
         'Authorization' => 'Basic ' . base64_encode($apikey),
         'X-Cardholder-IP' => '192.168.1.1',
     ],
-    //'debug' => true,
+    'curl' => [
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_SSL_FALSESTART => 1,
+        CURLOPT_TCP_FASTOPEN => 1,
+    ],
 ];
 
 $order = [
     'orderid'    => 'a766409',
     'language'   => 'da',
-    'successurl' => 'https://insertyoursuccesspage.dk',
+    'successurl' => 'https://docs.scanpay.dk/payment-link',
     'items'    => [
         [
             'name'     => 'Pink Floyd: The Dark Side Of The Moon',

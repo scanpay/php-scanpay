@@ -12,20 +12,9 @@ class Scanpay {
 
         // Public cURL handle (we want to reuse connections)
         $this->ch = curl_init();
-        curl_setopt_array($this->ch, [
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_CONNECTTIMEOUT => 20,
-            CURLOPT_TIMEOUT => 20,
-            CURLOPT_USE_SSL => CURLUSESSL_ALL,
-            CURLOPT_SSLVERSION => 6, // TLSv1.2
-        ]);
-        // TODO: Expose CURLOPT
-        // curl_setopt($this->ch, CURLOPT_TCP_FASTOPEN, 1);
-        // curl_setopt($this->ch, CURLOPT_SSL_FALSESTART, 1);
-
         $this->headers = [
             'Authorization' => 'Basic ' . base64_encode($apikey),
-            'X-SDK' => 'PHP-1.3.0/'. PHP_VERSION,
+            'X-SDK' => 'PHP-1.3.1/'. PHP_VERSION,
             'Content-Type' => 'application/json',
             'Expect' => '', // Prevent 'Expect: 100-continue' on POSTs >1024b.
         ];
@@ -51,14 +40,23 @@ class Scanpay {
 
     protected function request($path, $opts=[], $data=null) {
         $hostname = (isset($opts['hostname'])) ? $opts['hostname'] : 'api.scanpay.dk';
-
-        curl_setopt_array($this->ch, [
+        $curlopts = [
             CURLOPT_URL => 'https://' . $hostname . $path,
             CURLOPT_HTTPHEADER => $this->httpHeaders($opts),
             CURLOPT_CUSTOMREQUEST => ($data === null) ? 'GET' : 'POST',
             CURLOPT_POSTFIELDS => ($data === null) ? null : json_encode($data, JSON_UNESCAPED_SLASHES),
             CURLOPT_VERBOSE => isset($opts['debug']) ? $opts['debug'] : 0,
-        ]);
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_CONNECTTIMEOUT => 20,
+            CURLOPT_TIMEOUT => 20,
+            CURLOPT_USE_SSL => CURLUSESSL_ALL,
+            CURLOPT_SSLVERSION => 6, // TLSv1.2
+        ];
+        // Let the merchant override $curlopts.
+        if (isset($opts['curl'])) {
+            foreach($opts['curl'] as $key => &$val) { $curlopts[$key] = $val; }
+        }
+        curl_setopt_array($this->ch, $curlopts);
 
         $result = curl_exec($this->ch);
         if (!$result) {
