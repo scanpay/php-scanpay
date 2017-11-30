@@ -10,9 +10,10 @@ $scanpay = new Scanpay\Scanpay($apikey);
 
 $options = [
     'hostname' => 'api.test.scanpay.dk',
+    'debug' => true,
 ];
 
-$localSeq = 22;
+$localSeq = 50;
 
 try {
     $obj = $scanpay->seq($localSeq, $options);
