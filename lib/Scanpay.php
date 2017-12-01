@@ -13,19 +13,17 @@ class Scanpay {
         // Public cURL handle (we want to reuse connections)
         $this->ch = curl_init();
         $this->headers = [
-            'Authorization' => 'Basic ' . base64_encode($apikey),
-            'X-SDK' => 'PHP-1.3.1/'. PHP_VERSION,
-            'Content-Type' => 'application/json',
-            'Expect' => '', // Prevent 'Expect: 100-continue' on POSTs >1024b.
+            'authorization' => 'Authorization: Basic ' . base64_encode($apikey),
+            'x-sdk' => 'X-SDK: PHP-1.3.1/'. PHP_VERSION,
+            'content-type' => 'Content-Type: application/json',
+            'expect' => 'Expect: ', // Prevent 'Expect: 100-continue' on POSTs >1024b.
         ];
         $this->apikey = $apikey;
     }
 
+    /* Let merchant override headers and convert to regular array (cURL req.)  */
     protected function httpHeaders($o=[]) {
-        $ret = [];
-        foreach($this->headers as $key => &$val) {
-            $ret[strtolower($key)] = $key . ': ' . $val;
-        }
+        $ret = $this->headers;
         if (isset($o['headers'])) {
             foreach($o['headers'] as $key => &$val) {
                 $ret[strtolower($key)] = $key . ': ' . $val;
