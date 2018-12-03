@@ -11,14 +11,9 @@ $scanpay = new Scanpay\Scanpay($apikey);
 $options = [
     'hostname' => 'api.test.scanpay.dk',
     'headers' => [
-        'Authorization' => 'Basic ' . base64_encode($apikey),
         'X-Cardholder-IP' => '192.168.1.1',
     ],
-    'curl' => [
-        CURLOPT_TIMEOUT => 10,
-        CURLOPT_SSL_FALSESTART => 1,
-        CURLOPT_TCP_FASTOPEN => 1,
-    ],
+    //'debug' => true,
 ];
 
 $order = [
