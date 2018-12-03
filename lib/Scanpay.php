@@ -8,30 +8,31 @@ class Scanpay {
 
     public function __construct($apikey = '') {
         // Check if libcurl is enabled
-        if (!function_exists('curl_init')) { die("ERROR: Please enable php-curl\n"); }
+        if (!function_exists('curl_init')) {
+            die("ERROR: Please enable php-curl\n");
+        }
 
-        // Public cURL handle (we want to reuse connections)
+        // Public cURL handle (reuse handle)
         $this->ch = curl_init();
         $this->headers = [
             'authorization' => 'Authorization: Basic ' . base64_encode($apikey),
-            'x-sdk' => 'X-SDK: PHP-1.3.1/'. PHP_VERSION,
+            'x-sdk' => 'X-SDK: PHP-1.3.2/'. PHP_VERSION,
             'content-type' => 'Content-Type: application/json',
-            'expect' => 'Expect: ', // Prevent 'Expect: 100-continue' on POSTs >1024b.
+            'expect' => 'Expect: ',
         ];
+        /* The 'Expect' header will disable libcurl's expect-logic,
+            which will save us a HTTP roundtrip on POSTs >1024b. */
         $this->apikey = $apikey;
     }
 
-    /* Let merchant override headers and convert to regular array (cURL req.)  */
+    /* Create indexed array from associative array ($this->headers).
+        Let the merchant overwrite the headers. */
     protected function httpHeaders($o=[]) {
         $ret = $this->headers;
         if (isset($o['headers'])) {
             foreach($o['headers'] as $key => &$val) {
                 $ret[strtolower($key)] = $key . ': ' . $val;
             }
-        }
-        // Redefine API Key (DEPRECATED!!!)
-        if (isset($o['auth'])) {
-            $ret['authorization'] = 'Authorization: Basic ' . base64_encode($o['auth']);
         }
         return array_values($ret);
     }
@@ -48,11 +49,14 @@ class Scanpay {
             CURLOPT_CONNECTTIMEOUT => 20,
             CURLOPT_TIMEOUT => 20,
             CURLOPT_USE_SSL => CURLUSESSL_ALL,
-            CURLOPT_SSLVERSION => 6, // TLSv1.2
+            CURLOPT_SSLVERSION => 6,
         ];
-        // Let the merchant override $curlopts.
+
+        // Let the merchant overwrite $curlopts.
         if (isset($opts['curl'])) {
-            foreach($opts['curl'] as $key => &$val) { $curlopts[$key] = $val; }
+            foreach($opts['curl'] as $key => &$val) {
+                $curlopts[$key] = $val;
+            }
         }
         curl_setopt_array($this->ch, $curlopts);
 
@@ -91,15 +95,6 @@ class Scanpay {
         if (isset($o['seq']) && is_int($o['seq'])
                 && isset($o['changes']) && is_array($o['changes'])) {
             return $o;
-        }
-        throw new \Exception('Invalid response from server');
-    }
-
-    // maxSeq. (DEPRECATED!!!)
-    public function maxSeq($opts=[]) {
-        $o = $this->request('/v1/seq', $opts);
-        if (isset($o['seq']) && is_int($o['seq'])) {
-            return $o['seq'];
         }
         throw new \Exception('Invalid response from server');
     }
