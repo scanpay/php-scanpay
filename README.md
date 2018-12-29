@@ -1,6 +1,6 @@
 # Scanpay PHP Client
 
-PHP client library for the Scanpay API. You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk) or chat with us on `irc.scanpay.dk:6697` or `#scanpay` at Freenode ([webchat](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1)). The API documentation is available on [docs.scanpay.dk](https://docs.scanpay.dk/).
+PHP client library for the Scanpay API. You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk) or chat with us on `irc.scanpay.dk:6697` or `#scanpay` at Freenode ([webchat](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1)).
 
 ## Installation
 
@@ -26,7 +26,7 @@ $scanpay = new Scanpay\Scanpay('API key');
 
 ## Usage
 
-Please note that some methods accept an optional per-request `options` object. You can read more about this [here](#options).
+The API documentation is available [here](https://docs.scanpay.dk/). Most methods accept an optional per-request object with [options](#options), here referred to as `$options`.
 
 #### newURL(Object, options)
 
