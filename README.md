@@ -1,10 +1,10 @@
 # Scanpay PHP Client
 
-PHP client library for the Scanpay API. You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk) or chat with us on `irc.scanpay.dk:6697` or `#scanpay` at Freenode ([webchat](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1))
+PHP client library for the Scanpay API. You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk) or chat with us on `irc.scanpay.dk:6697` or `#scanpay` at Freenode ([webchat](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1)). The API documentation is available on [docs.scanpay.dk](https://docs.scanpay.dk/).
 
 ## Installation
 
-You need PHP version >= 5.6 with php-curl enabled. The package is published at [Packagist](https://packagist.org/packages/scanpay/scanpay). You can install the client via [Composer](http://getcomposer.org/):
+You need PHP version >= 5.6 with php-curl enabled. The package is published at [Packagist](https://packagist.org/packages/scanpay/scanpay). You can install the library via [Composer](http://getcomposer.org/):
 
 ```bash
 composer require scanpay/scanpay
@@ -12,7 +12,7 @@ composer require scanpay/scanpay
 And initiate it in your project with:
 
 ```php
-$scanpay = new Scanpay\Scanpay(' API-key ');
+$scanpay = new Scanpay\Scanpay('API key');
 ```
 
 ### Manual installation
@@ -21,16 +21,16 @@ If you do not wish to use Composer, you can download the [latest release](https:
 
 ```php
 require('lib/Scanpay.php');
-$scanpay = new Scanpay\Scanpay(' API-key ');
+$scanpay = new Scanpay\Scanpay('API key');
 ```
 
-## Methods
+## Usage
 
-Please note that all methods accept an optional per-request `options` object. You can read more about this [here](#options).
+Please note that some methods accept an optional per-request `options` object. You can read more about this [here](#options).
 
-#### newURL(Object, Object)
+#### newURL(Object, options)
 
-Create a payment link by passing the order details ([spec](https://docs.scanpay.dk/payment-link#request-fields)) through `newURL`:
+Create a link to our hosted payment window ([docs](https://docs.scanpay.dk/payment-link)).
 
 ```php
 $order = [
@@ -44,9 +44,9 @@ $order = [
 print_r ($URL = $scanpay->newURL($order, $options)); // returns String
 ```
 
-#### seq(Int, Object)
+#### seq(Int, options)
 
-Get an array with a number of changes since the supplied sequence number:
+Make a sequence request to pull changes from the server ([docs](https://docs.scanpay.dk/synchronization#sequence-request)).
 
 ```php
 $localSeq = 921;
@@ -57,16 +57,17 @@ print_r ('New local seq after applying all changes: ' . obj.seq);
 
 #### handlePing(Object)
 
-Securely and efficiently validate pings. This method accepts an optional object with the following arguments:
+Handle and validate synchronization pings ([docs](https://docs.scanpay.dk/synchronization#ping-service)).
+```php
+print_r ($json = $scanpay->handlePing());
+print_r ($json.seq);
+```
+This method accepts an optional object with the following arguments:
 
 * `signature`, ie. a string with the X-Signature header (String)
 * `body`, ie. the HTTP message body (String).
 * `debug` default is false. (Boolean)
 
-```php
-print_r ($json = $scanpay->handlePing());
-print_r ($json.seq);
-```
 
 ## Options
 
