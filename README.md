@@ -30,7 +30,7 @@ The API documentation is available [here](https://docs.scanpay.dk/). Most method
 
 #### newURL(Object, options)
 
-Create a link to our hosted payment window ([docs](https://docs.scanpay.dk/payment-link) | [example](tests/newURL.php)).
+Create a link to our hosted payment window ([docs](https://docs.scanpay.dk/payment-link) \| [example](tests/newURL.php)).
 
 ```php
 $order = [
@@ -46,7 +46,7 @@ print_r ($URL = $scanpay->newURL($order, $options)); // returns String
 
 #### seq(Int, options)
 
-Make a sequence request to pull changes from the server ([docs](https://docs.scanpay.dk/synchronization#sequence-request) | [example](tests/seq.php)).
+Make a sequence request to pull changes from the server ([docs](https://docs.scanpay.dk/synchronization#sequence-request) \| [example](tests/seq.php)).
 
 ```php
 $localSeq = 921;
@@ -57,7 +57,7 @@ print_r ('New local seq after applying all changes: ' . obj.seq);
 
 #### handlePing(Object)
 
-Handle and validate synchronization pings ([docs](https://docs.scanpay.dk/synchronization#ping-service) | [example](tests/handlePing.php)).
+Handle and validate synchronization pings ([docs](https://docs.scanpay.dk/synchronization#ping-service) \| [example](tests/handlePing.php)).
 ```php
 print_r ($json = $scanpay->handlePing());
 print_r ($json.seq);
