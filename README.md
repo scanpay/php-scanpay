@@ -44,7 +44,7 @@ $order = [
 print_r ($URL = $scanpay->newURL($order, $options)); // returns String
 ```
 
-#### seq(Int, options)
+#### seq(Integer, options)
 
 Make a sequence request to pull changes from the server ([docs](https://docs.scanpay.dk/synchronization#sequence-request) \| [example](tests/seq.php)).
 
