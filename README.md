@@ -1,4 +1,4 @@
-# Scanpay PHP Client
+# Scanpay PHP client
 
 PHP client library for the Scanpay API. You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk) or chat with us on `irc.scanpay.dk:6697` or `#scanpay` at Freenode ([webchat](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1)).
 
@@ -9,7 +9,7 @@ You need PHP version >= 5.6 with php-curl enabled. The package is published at [
 ```bash
 composer require scanpay/scanpay
 ```
-And initiate it in your project with:
+You can then include it in your project with:
 
 ```php
 $scanpay = new Scanpay\Scanpay('API key');
@@ -30,7 +30,7 @@ The API documentation is available [here](https://docs.scanpay.dk/). Most method
 
 #### newURL(Object, options)
 
-Create a link to our hosted payment window ([docs](https://docs.scanpay.dk/payment-link)).
+Create a link to our hosted payment window ([docs](https://docs.scanpay.dk/payment-link) | [example](tests/newURL.php)).
 
 ```php
 $order = [
@@ -46,7 +46,7 @@ print_r ($URL = $scanpay->newURL($order, $options)); // returns String
 
 #### seq(Int, options)
 
-Make a sequence request to pull changes from the server ([docs](https://docs.scanpay.dk/synchronization#sequence-request)).
+Make a sequence request to pull changes from the server ([docs](https://docs.scanpay.dk/synchronization#sequence-request) | [example](tests/seq.php)).
 
 ```php
 $localSeq = 921;
@@ -57,7 +57,7 @@ print_r ('New local seq after applying all changes: ' . obj.seq);
 
 #### handlePing(Object)
 
-Handle and validate synchronization pings ([docs](https://docs.scanpay.dk/synchronization#ping-service)).
+Handle and validate synchronization pings ([docs](https://docs.scanpay.dk/synchronization#ping-service) | [example](tests/handlePing.php)).
 ```php
 print_r ($json = $scanpay->handlePing());
 print_r ($json.seq);
