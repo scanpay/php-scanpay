@@ -12,17 +12,20 @@ $options = [
     'hostname' => 'api.test.scanpay.dk',
     'headers' => [
         'X-Cardholder-IP' => '192.168.1.1',
+        'X-Idempotency-Key' => 'asdsdcdccsvasd',
     ],
     'debug' => false,
     'curl' => [
         CURLOPT_TIMEOUT => 10,
-#       CURLOPT_SSL_FALSESTART => 1,
+        CURLOPT_SSL_FALSESTART => 1,
 #       CURLOPT_TCP_FASTOPEN => 1,
     ],
 ];
 
-$order = [
-    'orderid'    => 'a766409',
+$subscriberid = 2;
+
+$charge = [
+    'orderid'    => 'charge-1023',
     'language'   => 'da',
     'successurl' => 'https://docs.scanpay.dk/payment-link',
     'items'    => [
@@ -65,9 +68,18 @@ $order = [
 ];
 
 try {
-    print_r($newURL = $scanpay->newURL($order, $options) . "\n");
+    $obj = $scanpay->charge($subscriberid, $charge, $options);
 } catch (Exception $e) {
-    die($e->getMessage() . "\n");
+    die('Caught Scanpay client exception: ' . $e->getMessage() . "\n");
 }
+
+# Calculate total so we can print it
+$tot = 0;
+foreach ($charge['items'] as $item) {
+    $tot += $item['total'];
+}
+
+echo 'Successfully charged ' . $tot . ' ' . explode(' ', $item['total'])[1] .
+    " from subscriber #$subscriberid\n";
 
 ?>

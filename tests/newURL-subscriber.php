@@ -13,30 +13,18 @@ $options = [
     'headers' => [
         'X-Cardholder-IP' => '192.168.1.1',
     ],
-    'debug' => false,
     'curl' => [
         CURLOPT_TIMEOUT => 10,
-#       CURLOPT_SSL_FALSESTART => 1,
+        CURLOPT_SSL_FALSESTART => 1,
 #       CURLOPT_TCP_FASTOPEN => 1,
     ],
 ];
 
 $order = [
-    'orderid'    => 'a766409',
     'language'   => 'da',
     'successurl' => 'https://docs.scanpay.dk/payment-link',
-    'items'    => [
-        [
-            'name'     => 'Pink Floyd: The Dark Side Of The Moon',
-            'quantity' => 2,
-            'total'    => '199.99 DKK',
-            'sku'      => 'fadf23',
-        ], [
-            'name'     => '巨人宏偉的帽子',
-            'quantity' => 2,
-            'total'    => '420 DKK',
-            'sku'      => '124',
-        ],
+    'subscriber'    => [
+        'ref' => 'sub13991',
     ],
     'billing'  => [
         'name'    => 'John Doe',
