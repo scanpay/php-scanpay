@@ -34,6 +34,7 @@ Create a link to our hosted payment window ([docs](https://docs.scanpay.dk/payme
 
 ```php
 $order = [
+    'orderid'    => '123',
     'items' => [
         [
             'name'     => 'Pink Floyd: The Dark Side Of The Moon',
@@ -68,6 +69,31 @@ This method accepts an optional object with the following arguments:
 * `body`, ie. the HTTP message body (String).
 * `debug` default is false. (Boolean)
 
+#### charge(Integer, Object, options)
+
+Charge a subscriber ([docs](https://docs.scanpay.dk/subscriptions/charge-subscriber) \| [example](tests/charge.php)).
+
+```php
+$subscriberid = 2;
+$charge = [
+    'orderid'    => 'charge-1023',
+    'items'    => [
+        [
+            'name'     => 'Pink Floyd: The Dark Side Of The Moon',
+            'total'    => '199.99 DKK',
+        ]
+    ]
+};
+$scanpay->charge($subscriberid, $charge, $options);
+```
+
+#### renew(Integer, Object, options)
+
+Create a link to renew the payment method for a subscriber. ([docs](https://docs.scanpay.dk/subscriptions/renew-subscriber) \| [example](tests/renew.php)).
+
+```php
+print_r ($URL = $scanpay->renew($subscriberid, [], $options)); // returns String
+```
 
 ## Options
 

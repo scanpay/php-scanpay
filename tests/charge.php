@@ -68,7 +68,7 @@ $charge = [
 ];
 
 try {
-    $obj = $scanpay->charge($subscriberid, $charge, $options);
+    $scanpay->charge($subscriberid, $charge, $options);
 } catch (Exception $e) {
     die('Caught Scanpay client exception: ' . $e->getMessage() . "\n");
 }

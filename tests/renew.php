@@ -23,14 +23,14 @@ $options = [
 
 $subscriberid = 2;
 
-$charge = [
+$data = [
     'successurl' => 'https://docs.test.scanpay.dk/subscriptions/renew-subscriber',
     'language'   => 'da',
     'lifetime'   => '1h',
 ];
 
 try {
-    print_r($renewURL = $scanpay->renew($subscriberid, $charge, $options) . "\n");
+    print_r($renewURL = $scanpay->renew($subscriberid, $data, $options) . "\n");
 } catch (Exception $e) {
     die('Caught Scanpay client exception: ' . $e->getMessage() . "\n");
 }
