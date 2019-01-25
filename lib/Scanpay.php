@@ -18,7 +18,7 @@ class Scanpay {
         $this->ch = curl_init();
         $this->headers = [
             'authorization' => 'Authorization: Basic ' . base64_encode($apikey),
-            'x-sdk' => 'X-SDK: PHP-1.3.2/'. PHP_VERSION,
+            'x-sdk' => 'X-SDK: PHP-1.4.0/'. PHP_VERSION,
             'content-type' => 'Content-Type: application/json',
             'expect' => 'Expect: ',
         ];
