@@ -12,7 +12,7 @@ $options = [
     'hostname' => 'api.test.scanpay.dk',
     'headers' => [
         'X-Cardholder-IP' => '192.168.1.1',
-        'X-Idempotency-Key' => 'asdsdcdccsvasd',
+        'Idempotency-Key' => 'asdsdcdccsvasd',
     ],
     'debug' => false,
     'curl' => [
@@ -69,7 +69,11 @@ $charge = [
 
 try {
     $scanpay->charge($subscriberid, $charge, $options);
-} catch (Exception $e) {
+} catch (Scanpay\IdemReusableException $e) {
+    echo "Received error which allows idempotency key to be reused: '" . $e->getMessage() . "\n";
+    echo "<< Save idempotency key to database and trying to charge again later >>\n";
+    die('Done for now');
+} catch (\Exception $e) {
     die('Caught Scanpay client exception: ' . $e->getMessage() . "\n");
 }
 

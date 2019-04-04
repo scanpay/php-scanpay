@@ -1,6 +1,8 @@
 <?php
 namespace Scanpay;
 
+class IdemReusableException extends \Exception {}
+
 class Scanpay {
     protected $ch;
     protected $headers;
@@ -36,7 +38,7 @@ class Scanpay {
                 $ret[strtolower($key)] = $key . ': ' . $val;
             }
         }
-        if (isset($ret['x-idempotency-key'])) {
+        if (isset($ret['idempotency-key'])) {
             $this->useidem = true;
         }
         return array_values($ret);
@@ -79,10 +81,10 @@ class Scanpay {
 
         $result = curl_exec($this->ch);
         if (!$result) {
-            throw new \Exception(curl_strerror(curl_errno($this->ch)));
+            throw new IdemReusableException(curl_strerror(curl_errno($this->ch)));
         }
 
-        $statusCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+        $statusCode = curl_getinfo($this->ch, CURLINFO_RESPONSE_CODE);
 
         /* Handle idempotency status */
         if ($this->useidem) {
@@ -100,13 +102,10 @@ class Scanpay {
                 $err = 'Server returned unknown idempotency status ' . $this->idemstatus;
                 break;
             }
-            /* Disregard idempotency errors until API supports it */
-            if (/*$err*/0) {
-                throw new \Exception($err . '. Server responded with ' . explode("\n", $result)[0]);
-            }
+            throw new IdemReusableException($err . ". Scanpay returned $statusCode - " . explode("\n", $result)[0]);
         }
         if ($statusCode !== 200) {
-            throw new \Exception(explode("\n", $result)[0]);
+            throw new \Exception('Scanpay returned "' . explode("\n", $result)[0] . '"');
         }
         // Decode the json response (@: surpress warnings)
         if (!is_array($resobj = @json_decode($result, true))) {
