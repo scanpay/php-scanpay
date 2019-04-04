@@ -69,12 +69,13 @@ $charge = [
 
 try {
     $scanpay->charge($subscriberid, $charge, $options);
-} catch (Scanpay\IdemReusableException $e) {
-    echo "Received error which allows idempotency key to be reused: '" . $e->getMessage() . "\n";
-    echo "<< Save idempotency key to database and trying to charge again later >>\n";
-    die('Done for now');
+} catch (Scanpay\IdempotentResponseException $e) {
+    echo('Received idempotent error response: ' . $e->getMessage() . "\n");
+    die('You can generate a new idempotency key and try again later');
 } catch (\Exception $e) {
-    die('Caught Scanpay client exception: ' . $e->getMessage() . "\n");
+    echo "Received error which is not idempotent: '" . $e->getMessage() . "\n";
+    echo "<< Save idempotency key to database >>\n";
+    die('Done for now. Retry later with same idempotency key.');
 }
 
 # Calculate total so we can print it
