@@ -20,7 +20,7 @@ class Scanpay {
         $this->ch = curl_init();
         $this->headers = [
             'authorization' => 'Authorization: Basic ' . base64_encode($apikey),
-            'x-sdk' => 'X-SDK: PHP-1.4.0/'. PHP_VERSION,
+            'x-sdk' => 'X-SDK: PHP-1.5.0/'. PHP_VERSION,
             'content-type' => 'Content-Type: application/json',
             'expect' => 'Expect: ',
         ];
@@ -169,6 +169,11 @@ class Scanpay {
             return $obj;
         }
         throw new \Exception('missing fields in Scanpay response');
+    }
+
+    public function generateIdempotencyKey()
+    {
+		return rtrim(base64_encode(random_bytes(32)), '=');
     }
 
     public function charge($subid, $data, $opts=[]) {

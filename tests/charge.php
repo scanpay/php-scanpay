@@ -8,11 +8,15 @@ require dirname(__FILE__)  . '/../lib/Scanpay.php';
 $apikey = '1153:YHZIUGQw6NkCIYa3mG6CWcgShnl13xuI7ODFUYuMy0j790Q6ThwBEjxfWFXwJZ0W';
 $scanpay = new Scanpay\Scanpay($apikey);
 
+
+$idempotencyKey = $scanpay->generateIdempotencyKey();
+/* == Save the key to your database with your order or charge entry == */
+
 $options = [
     'hostname' => 'api.test.scanpay.dk',
     'headers' => [
         'X-Cardholder-IP' => '192.168.1.1',
-        'Idempotency-Key' => 'asdsdcdccsvasd',
+        'Idempotency-Key' => $idempotencyKey,
     ],
     'debug' => false,
     'curl' => [
@@ -75,7 +79,7 @@ try {
 } catch (\Exception $e) {
     echo "Received error which is not idempotent: '" . $e->getMessage() . "\n";
     echo "<< Save idempotency key to database >>\n";
-    die('Done for now. Retry later with same idempotency key.');
+    die('Done for now. Retry later with same idempotency key ' . $idempotencyKey);
 }
 
 # Calculate total so we can print it
