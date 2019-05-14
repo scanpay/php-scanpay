@@ -177,7 +177,12 @@ class Scanpay {
     }
 
     public function charge($subid, $data, $opts=[]) {
-        $this->request("/v1/subscribers/$subid/charge", $opts, $data);
+        $o = $this->request("/v1/subscribers/$subid/charge", $opts, $data);
+        if (isset($o['type']) && $o['type'] === 'charge' && isset($o['id']) && is_int($o['id'])
+            && isset($o['totals']) && isset($o['totals']['authorized'])) {
+            return $o;
+        }
+        throw new \Exception('Invalid response from server');
     }
 
     public function renew($subid, $data, $opts=[]) {

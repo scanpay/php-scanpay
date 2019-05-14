@@ -23,7 +23,7 @@ $options = [
     ],
 ];
 
-$localSeq = 50;
+$localSeq = 270;
 
 try {
     $obj = $scanpay->seq($localSeq, $options);

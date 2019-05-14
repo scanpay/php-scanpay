@@ -26,7 +26,7 @@ $options = [
     ],
 ];
 
-$subscriberid = 2;
+$subscriberid = 10;
 
 $charge = [
     'orderid'    => 'charge-1023',
@@ -72,7 +72,7 @@ $charge = [
 ];
 
 try {
-    $scanpay->charge($subscriberid, $charge, $options);
+    $chargeResponse = $scanpay->charge($subscriberid, $charge, $options);
 } catch (Scanpay\IdempotentResponseException $e) {
     echo('Received idempotent error response: ' . $e->getMessage() . "\n");
     die('You can generate a new idempotency key and try again later');
@@ -87,8 +87,13 @@ $tot = 0;
 foreach ($charge['items'] as $item) {
     $tot += $item['total'];
 }
-
-echo 'Successfully charged ' . $tot . ' ' . explode(' ', $item['total'])[1] .
-    " from subscriber #$subscriberid\n";
+$tot .= ' ' . explode(' ', $item['total'])[1];
+if ($chargeResponse['totals']['authorized'] < $tot) {
+    echo "Charge resulted in a partial authorization, charged {$chargeResponse['totals']['authorized']}" .
+        " of $tot from subscriber #$subscriberid (Created trn #$chargeResponse[id])\n";
+} else {
+    echo "Successfully charged $tot" .
+        " from subscriber #$subscriberid (Created trn #$chargeResponse[id])\n";
+}
 
 ?>
