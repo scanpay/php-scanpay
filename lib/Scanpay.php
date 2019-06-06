@@ -47,7 +47,7 @@ class Scanpay {
     protected function handleHeaders($curl, $hdr) {
         $arr = explode(':', $hdr, 2);
         if (count($arr) === 2 && strtolower(trim($arr[0])) === 'idempotency-status') {
-            $this->$idemstatus = strtoupper(trim($arr[1]));
+            $this->idemstatus = strtoupper(trim($arr[1]));
         }
         return strlen($hdr);
     }
@@ -102,7 +102,9 @@ class Scanpay {
                 $err = 'Server returned unknown idempotency status ' . $this->idemstatus;
                 break;
             }
-            throw new \Exception($err . ". Scanpay returned $statusCode - " . explode("\n", $result)[0]);
+            if (!is_null($err)) {
+                throw new \Exception($err . ". Scanpay returned $statusCode - " . explode("\n", $result)[0]);
+            }
         }
         if ($statusCode !== 200) {
             throw new IdempotentResponseException('Scanpay returned "' . explode("\n", $result)[0] . '"');
