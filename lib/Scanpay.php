@@ -9,8 +9,9 @@ class Scanpay {
     protected $apikey;
     protected $idemstatus;
     protected $useidem;
+    protected $opts;
 
-    public function __construct($apikey = '') {
+    public function __construct($apikey = '', $opts=[]) {
         // Check if libcurl is enabled
         if (!function_exists('curl_init')) {
             die("ERROR: Please enable php-curl\n");
@@ -27,6 +28,7 @@ class Scanpay {
         /* The 'Expect' header will disable libcurl's expect-logic,
             which will save us a HTTP roundtrip on POSTs >1024b. */
         $this->apikey = $apikey;
+        $this->opts = $opts;
     }
 
     /* Create indexed array from associative array ($this->headers).
@@ -53,6 +55,7 @@ class Scanpay {
     }
 
     protected function request($path, $opts=[], $data=null) {
+        $opts = array_merge($this->opts, $opts);
         $hostname = (isset($opts['hostname'])) ? $opts['hostname'] : 'api.scanpay.dk';
         $this->useidem = false;
         $this->idemstatus = null;
