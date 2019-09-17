@@ -178,7 +178,7 @@ class Scanpay {
 
     public function generateIdempotencyKey()
     {
-		return rtrim(base64_encode(random_bytes(32)), '=');
+        return rtrim(base64_encode(random_bytes(32)), '=');
     }
 
     public function charge($subid, $data, $opts=[]) {
