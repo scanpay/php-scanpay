@@ -176,6 +176,10 @@ class Scanpay {
         throw new \Exception('missing fields in Scanpay response');
     }
 
+    public function capture($trnid, $data, $opts=[]) {
+        return $this->request("/v1/transactions/$trnid/capture", $opts, $data);
+    }
+
     public function generateIdempotencyKey()
     {
         return rtrim(base64_encode(random_bytes(32)), '=');
