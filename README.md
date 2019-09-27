@@ -69,7 +69,7 @@ This method accepts an optional object with the following arguments:
 * `body`, ie. the HTTP message body (String).
 * `debug` default is false. (Boolean)
 
-### capture(Integer, Object, options)
+#### capture(Integer, Object, options)
 
 Capture an amount from a transaction.
 
