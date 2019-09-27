@@ -69,6 +69,19 @@ This method accepts an optional object with the following arguments:
 * `body`, ie. the HTTP message body (String).
 * `debug` default is false. (Boolean)
 
+### capture(Integer, Object, options)
+
+Capture an amount from a transaction.
+
+```php
+$trnid = 2;
+$data = [
+    'total' => '1 DKK',
+    'index' => 0,
+};
+$scanpay->capture($trnid, $data, $options);
+```
+
 #### charge(Integer, Object, options)
 
 Charge a subscriber ([docs](https://docs.scanpay.dk/subscriptions/charge-subscriber) \| [example](tests/charge.php)).
