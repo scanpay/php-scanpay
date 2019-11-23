@@ -18,7 +18,7 @@ try {
 
     if ($ping['seq'] > $localSeq) {
         // Fetch changes with a seq request...
-        $seq = $scanpay->seq($ping['seq'], $options);
+        $seq = $scanpay->seq($localSeq, $options);
 
         foreach ($seq['changes'] as $change) {
             // Apply some changes (captures, refunds ...)
