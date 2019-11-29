@@ -30,8 +30,6 @@ $subscriberid = 10;
 
 $charge = [
     'orderid'    => 'charge-1023',
-    'language'   => 'da',
-    'successurl' => 'https://docs.scanpay.dk/payment-link',
     'items'    => [
         [
             'name'     => 'Pink Floyd: The Dark Side Of The Moon',

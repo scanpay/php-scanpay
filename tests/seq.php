@@ -19,7 +19,6 @@ $options = [
     'curl' => [
         CURLOPT_TIMEOUT => 10,
         CURLOPT_SSL_FALSESTART => 1,
-        CURLOPT_TCP_FASTOPEN => 1,
     ],
 ];
 

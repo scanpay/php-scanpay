@@ -43,7 +43,7 @@ class Scanpay {
         if (isset($ret['idempotency-key'])) {
             $this->useidem = true;
         }
-        return array_values($ret);
+        return $ret;
     }
 
     protected function handleHeaders($curl, $hdr) {
@@ -57,7 +57,7 @@ class Scanpay {
     protected function request($path, $opts=[], $data=null) {
         /* Merge headers */
         $headers = $this->httpHeaders($this->headers, $this->opts);
-        $headers = $this->httpHeaders($headers, $opts);
+        $headers = array_values($this->httpHeaders($headers, $opts));
         /* Merge other options */
         $opts = array_merge($this->opts, $opts);
         $hostname = (isset($opts['hostname'])) ? $opts['hostname'] : 'api.scanpay.dk';
@@ -67,7 +67,6 @@ class Scanpay {
             CURLOPT_URL => 'https://' . $hostname . $path,
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_CUSTOMREQUEST => ($data === null) ? 'GET' : 'POST',
-            CURLOPT_POSTFIELDS => ($data === null) ? null : json_encode($data, JSON_UNESCAPED_SLASHES),
             CURLOPT_VERBOSE => isset($opts['debug']) ? $opts['debug'] : 0,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_CONNECTTIMEOUT => 20,
@@ -75,6 +74,12 @@ class Scanpay {
             CURLOPT_USE_SSL => CURLUSESSL_ALL,
             CURLOPT_SSLVERSION => 6,
         ];
+        if ($data !== null) {
+            $curlopts[CURLOPT_POSTFIELDS] = json_encode($data, JSON_UNESCAPED_SLASHES);
+            if ($curlopts[CURLOPT_POSTFIELDS] === false) {
+                throw new \Exception('Failed to JSON encode request to Scanpay: ' . json_last_error_msg());
+            }
+        }
         if ($this->useidem) {
             $curlopts[CURLOPT_HEADERFUNCTION] = [$this, 'handleHeaders'];
         }
