@@ -1,6 +1,6 @@
 <?php
 /*
-    help@scanpay.dk || irc.scanpay.dk:6697 || scanpay.dk/slack
+    help@scanpay.dk || irc.libera.chat:6697 #scanpay
 */
 ini_set('display_errors', 'On');
 require dirname(__FILE__)  . '/../lib/Scanpay.php';
@@ -13,7 +13,7 @@ $options = [
     'debug' => false,
     'curl' => [
         CURLOPT_TIMEOUT => 10,
-        CURLOPT_SSL_FALSESTART => 1,
+        #CURLOPT_SSL_FALSESTART => 1,
     ],
 ];
 

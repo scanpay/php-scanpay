@@ -1,6 +1,6 @@
 # Scanpay PHP client
 
-The official PHP client library for the Scanpay API ([docs](https://docs.scanpay.dk)). You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk), or chat with us on IRC at Freenode [`#scanpay`](https://webchat.freenode.net?randomnick=1&channels=scanpay&prompt=1).
+The official PHP client library for the Scanpay API ([docs](https://docs.scanpay.dk)). You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk), or chat with us on IRC at libera.chat #scanpay
 
 ## Installation
 
