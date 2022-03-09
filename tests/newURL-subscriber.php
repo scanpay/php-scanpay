@@ -1,8 +1,9 @@
 <?php
+
 /*
+    Docs: https://docs.scanpay.dk/subscriptions/
     help@scanpay.dk || irc.libera.chat:6697 #scanpay
 */
-ini_set('display_errors', 'On');
 require dirname(__FILE__)  . '/../lib/Scanpay.php';
 
 $apikey = '1153:YHZIUGQw6NkCIYa3mG6CWcgShnl13xuI7ODFUYuMy0j790Q6ThwBEjxfWFXwJZ0W';
@@ -12,11 +13,6 @@ $options = [
     'hostname' => 'api.test.scanpay.dk',
     'headers' => [
         'X-Cardholder-IP' => '192.168.1.1',
-    ],
-    'curl' => [
-        CURLOPT_TIMEOUT => 10,
-        CURLOPT_SSL_FALSESTART => 1,
-#       CURLOPT_TCP_FASTOPEN => 1,
     ],
 ];
 
@@ -57,5 +53,3 @@ try {
 } catch (Exception $e) {
     die($e->getMessage() . "\n");
 }
-
-?>

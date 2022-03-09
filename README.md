@@ -112,11 +112,11 @@ print_r ($URL = $scanpay->renew($subscriberid, [], $options)); // returns String
 
 All methods, except `handlePing`, accept an optional per-request `options` object. You can use this to:
 
-* Set the API key for this request ([example](tests/seq.php#L16))
-* Set HTTP headers, e.g. the highly recommended `X-Cardholder-IP` ([example](tests/newURL.php#L14))
-* Change the hostname to use our test environment `api.test.scanpay.dk` ([example](tests/newURL.php#L12))
-* Enable debugging mode ([example](tests/newURL.php#L16))
-* Override cURL options with [`CURLOPT_*`](http://php.net/manual/en/function.curl-setopt.php) parameters ([example](tests/seq.php#L19-L23)).
+* Set HTTP headers, e.g. the highly recommended `X-Cardholder-IP` ([example](tests/options.php#L17-L22))
+* Override API key ([example](tests/options.php#L19))
+* Change the hostname to use our test environment `api.test.scanpay.dk` ([example](tests/options.php#L14))
+* Enable debugging mode ([example](tests/options.php#L25))
+* Override cURL options with [`CURLOPT_*`](https://php.net/manual/en/function.curl-setopt.php) parameters ([example](tests/options.php#L28-L31)).
 
 ## Compatibility table
 

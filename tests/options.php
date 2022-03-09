@@ -10,9 +10,24 @@ $apikey = '1153:YHZIUGQw6NkCIYa3mG6CWcgShnl13xuI7ODFUYuMy0j790Q6ThwBEjxfWFXwJZ0W
 $scanpay = new Scanpay\Scanpay($apikey);
 
 $options = [
+    // Change API endpoint.
     'hostname' => 'api.test.scanpay.dk',
+
+    // Set HTTP HEADERS
     'headers' => [
+        // Manually overwrite the API key
+        'Authorization' => 'Basic ' . base64_encode($apikey),
+        // Client IP address (DoS prevention)
         'X-Cardholder-IP' => '192.168.1.1',
+    ],
+
+    // Set cURL to verbose
+    'debug' => true,
+
+    // cURL options (https://php.net/manual/en/function.curl-setopt.php)
+    'curl' => [
+        CURLOPT_SSL_FALSESTART => 1,
+        CURLOPT_TCP_FASTOPEN => 1,
     ],
 ];
 
@@ -32,31 +47,7 @@ $order = [
             'total'    => '420 DKK',
             'sku'      => '124',
         ],
-    ],
-    'billing'  => [
-        'name'    => 'John Doe',
-        'company' => 'The Shop A/S',
-        'email'   => 'john@doe.com',
-        'phone'   => '+4512345678',
-        'address' => ['Langgade 23, 2. th'],
-        'city'    => 'Havneby',
-        'zip'     => '1234',
-        'state'   => '',
-        'country' => 'DK',
-        'vatin'   => '35413308',
-        'gln'     => '7495563456235',
-    ],
-    'shipping' => [
-        'name'    => 'Jan Dåh',
-        'company' => 'The Choppa A/S',
-        'email'   => 'jan@doh.com',
-        'phone'   => '+4587654321',
-        'address' => ['Langgade 23, 1. th', 'C/O The Choppa'],
-        'city'    => 'Haveby',
-        'zip'     => '1235',
-        'state'   => '',
-        'country' => 'DK',
-    ],
+    ]
 ];
 
 try {

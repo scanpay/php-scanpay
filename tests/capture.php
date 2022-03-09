@@ -1,8 +1,9 @@
 <?php
+
 /*
+    Docs: https://docs.scanpay.dk/
     help@scanpay.dk || irc.libera.chat:6697 #scanpay
 */
-ini_set('display_errors', 'On');
 require dirname(__FILE__)  . '/../lib/Scanpay.php';
 
 $apikey = '1153:YHZIUGQw6NkCIYa3mG6CWcgShnl13xuI7ODFUYuMy0j790Q6ThwBEjxfWFXwJZ0W';
@@ -10,11 +11,6 @@ $scanpay = new Scanpay\Scanpay($apikey);
 
 $options = [
     'hostname' => 'api.test.scanpay.dk',
-    'debug' => false,
-    'curl' => [
-        CURLOPT_TIMEOUT => 10,
-        #CURLOPT_SSL_FALSESTART => 1,
-    ],
 ];
 
 $trnid = 431;
@@ -31,4 +27,3 @@ try {
     die("Capture failed: '" . $e->getMessage() . "\n");
 }
 echo "Successfully captured $total from trasaction $trnid\n"
-?>

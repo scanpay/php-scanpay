@@ -1,14 +1,16 @@
 <?php
+
 /*
+    Docs: https://docs.scanpay.dk/synchronization
     help@scanpay.dk || irc.libera.chat:6697 #scanpay
 */
-ini_set('display_errors', 'On');
 require dirname(__FILE__)  . '/../lib/Scanpay.php';
 
 $apikey = '1153:YHZIUGQw6NkCIYa3mG6CWcgShnl13xuI7ODFUYuMy0j790Q6ThwBEjxfWFXwJZ0W';
 $scanpay = new Scanpay\Scanpay($apikey);
+
 $options = [
-    'hostname' => 'api.test.scanpay.dk', // for seq request
+    'hostname' => 'api.test.scanpay.dk',
 ];
 
 $localSeq = 22;
@@ -27,8 +29,6 @@ try {
         }
         $localSeq = $seq['seq'];
     }
-} catch(\Exception $e) {
+} catch (\Exception $e) {
     print_r('exception: ' . $e->getMessage());
 }
-
-?>
