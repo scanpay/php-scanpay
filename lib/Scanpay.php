@@ -40,7 +40,7 @@ class Scanpay
         Let the merchant overwrite the headers. */
     protected function httpHeaders($oldHeaders, $o = [])
     {
-        $ret = $oldHeaders; /* copy array literal */
+        $ret = $oldHeaders;
         if (isset($o['headers'])) {
             foreach ($o['headers'] as $key => &$val) {
                 $ret[strtolower($key)] = $key . ': ' . $val;
@@ -79,9 +79,7 @@ class Scanpay
             CURLOPT_VERBOSE => isset($opts['debug']) ? $opts['debug'] : 0,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_CONNECTTIMEOUT => 20,
-            CURLOPT_TIMEOUT => 20,
-            CURLOPT_USE_SSL => CURLUSESSL_ALL,
-            CURLOPT_SSLVERSION => 6,
+            CURLOPT_TIMEOUT => 120,
         ];
 
         if ($data !== null) {
@@ -110,7 +108,7 @@ class Scanpay
 
         $statusCode = curl_getinfo($this->ch, CURLINFO_RESPONSE_CODE);
 
-        /* Handle idempotency status */
+        // Handle idempotency status
         if ($this->useidem) {
             $err = null;
             switch ($this->idemstatus) {
