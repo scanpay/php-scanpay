@@ -6,8 +6,8 @@
     "homepage": "https://scanpay.dk",
     "support": {
         "email": "support@scanpay.dk",
-        "docs": "https://docs.scanpay.dk",
-        "issues": "https://github.com/scanpaydk/php-scanpay/issues"
+        "docs": "https://docs.scanpay.dev",
+        "issues": "https://github.com/scanpay/php-scanpay/issues"
     },
     "license": "MIT",
     "require": {
