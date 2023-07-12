@@ -10,7 +10,7 @@ $apikey = '1153:YHZIUGQw6NkCIYa3mG6CWcgShnl13xuI7ODFUYuMy0j790Q6ThwBEjxfWFXwJZ0W
 $scanpay = new Scanpay\Scanpay($apikey);
 
 $options = [
-    'hostname' => 'api.test.scanpay.dk',
+    'hostname' => 'api.scanpay.dev',
 ];
 
 $trnid = 431;
@@ -26,4 +26,4 @@ try {
 } catch (\Exception $e) {
     die("Capture failed: '" . $e->getMessage() . "\n");
 }
-echo "Successfully captured $total from trasaction $trnid\n"
+echo "Successfully captured $total from trasaction $trnid\n";

@@ -45,24 +45,30 @@ class Scanpay
             foreach ($o['headers'] as $key => &$val) {
                 $ret[strtolower($key)] = $key . ': ' . $val;
             }
-        }
-        if (isset($ret['idempotency-key'])) {
-            $this->useidem = true;
+            if (isset($ret['idempotency-key'])) {
+                $this->useidem = true;
+            }
         }
         return $ret;
     }
 
-    protected function handleHeaders($curl, $hdr)
+    protected function headerCallback($curl, $hdr)
     {
-        $arr = explode(':', $hdr, 2);
-        if (count($arr) === 2 && strtolower(trim($arr[0])) === 'idempotency-status') {
-            $this->idemstatus = strtoupper(trim($arr[1]));
+        $header = explode(':', $hdr, 2);
+        // Skip invalid headers
+        if (count($header) < 2) return strlen($hdr);
+
+        if (strtolower(trim($header[0])) === 'idempotency-status') {
+            $this->idemstatus = strtoupper(trim($header[1]));
         }
         return strlen($hdr);
     }
 
     protected function request($path, $opts = [], $data = null)
     {
+        $this->useidem = false;
+        $this->idemstatus = null;
+
         // Merge headers
         $headers = $this->httpHeaders($this->headers, $this->opts);
         $headers = array_values($this->httpHeaders($headers, $opts));
@@ -70,8 +76,7 @@ class Scanpay
         // Merge other options
         $opts = array_merge($this->opts, $opts);
         $hostname = (isset($opts['hostname'])) ? $opts['hostname'] : 'api.scanpay.dk';
-        $this->useidem = false;
-        $this->idemstatus = null;
+
         $curlopts = [
             CURLOPT_URL => 'https://' . $hostname . $path,
             CURLOPT_HTTPHEADER => $headers,
@@ -90,7 +95,8 @@ class Scanpay
         }
 
         if ($this->useidem) {
-            $curlopts[CURLOPT_HEADERFUNCTION] = [$this, 'handleHeaders'];
+            // this function is called by cURL for each header received
+            $curlopts[CURLOPT_HEADERFUNCTION] = [$this, 'headerCallback'];
         }
 
         // Let the merchant override $curlopts.
@@ -107,30 +113,15 @@ class Scanpay
         }
 
         $statusCode = curl_getinfo($this->ch, CURLINFO_RESPONSE_CODE);
-
-        // Handle idempotency status
-        if ($this->useidem) {
-            $err = null;
-            switch ($this->idemstatus) {
-                case 'OK':
-                    break;
-                case 'ERROR':
-                    $err = 'Server failed to provide idempotency';
-                    break;
-                case null:
-                    $err = 'Idempotency status response header missing';
-                    break;
-                default:
-                    $err = 'Server returned unknown idempotency status ' . $this->idemstatus;
-                    break;
-            }
-            if (!is_null($err)) {
-                throw new \Exception($err . ". Scanpay returned $statusCode - " . explode("\n", $result)[0]);
-            }
-        }
         if ($statusCode !== 200) {
-            throw new IdempotentResponseException('Scanpay returned "' . explode("\n", $result)[0] . '"');
+            throw new \Exception(('Scanpay returned "' . explode("\n", $result)[0] . '"'));
         }
+
+        // Validate Idempotency-Status
+        if ($this->useidem && $this->idemstatus !== 'OK') {
+            throw new \Exception("Server failed to provide idempotency. Scanpay returned $statusCode - " . explode("\n", $result)[0]);
+        }
+
         // Decode the json response (@: suppress warnings)
         if (!is_array($resobj = @json_decode($result, true))) {
             throw new IdempotentResponseException('Invalid JSON response from server');

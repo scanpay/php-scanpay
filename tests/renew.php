@@ -10,7 +10,7 @@ $apikey = '1153:YHZIUGQw6NkCIYa3mG6CWcgShnl13xuI7ODFUYuMy0j790Q6ThwBEjxfWFXwJZ0W
 $scanpay = new Scanpay\Scanpay($apikey);
 
 $options = [
-    'hostname' => 'api.test.scanpay.dk',
+    'hostname' => 'api.scanpay.dev',
     'headers' => [
         'X-Cardholder-IP' => '192.168.1.1',
     ]

@@ -10,7 +10,7 @@ $apikey = '1153:YHZIUGQw6NkCIYa3mG6CWcgShnl13xuI7ODFUYuMy0j790Q6ThwBEjxfWFXwJZ0W
 $scanpay = new Scanpay\Scanpay($apikey);
 
 $options = [
-    'hostname' => 'api.test.scanpay.dk',
+    'hostname' => 'api.scanpay.dev',
 ];
 
 $localSeq = 270;

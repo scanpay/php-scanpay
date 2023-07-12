@@ -13,14 +13,14 @@ $idempotencyKey = $scanpay->generateIdempotencyKey();
 /* == Save the key to your database with your order or charge entry == */
 
 $options = [
-    'hostname' => 'api.test.scanpay.dk',
+    'hostname' => 'api.scanpay.dev',
     'headers' => [
         'X-Cardholder-IP' => '192.168.1.1',
         'Idempotency-Key' => $idempotencyKey,
     ],
 ];
 
-$subscriberid = 10;
+$subscriberid = 68;
 
 $charge = [
     'orderid'    => 'charge-1023',
@@ -77,9 +77,10 @@ try {
 # Calculate total so we can print it
 $tot = 0;
 foreach ($charge['items'] as $item) {
-    $tot += $item['total'];
+    $tot += explode(' ', $item['total'])[0];
 }
 $tot .= ' ' . explode(' ', $item['total'])[1];
+
 if ($chargeResponse['totals']['authorized'] < $tot) {
     echo "Charge resulted in a partial authorization, charged {$chargeResponse['totals']['authorized']}" .
         " of $tot from subscriber #$subscriberid (Created trn #$chargeResponse[id])\n";
