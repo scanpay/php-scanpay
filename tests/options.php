@@ -11,7 +11,7 @@ $scanpay = new Scanpay\Scanpay($apikey);
 
 $options = [
     // Change API endpoint.
-    'hostname' => 'api.test.scanpay.dk',
+    'hostname' => 'api.scanpay.dev',
 
     // Set HTTP HEADERS
     'headers' => [

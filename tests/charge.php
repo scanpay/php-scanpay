@@ -13,7 +13,7 @@ $idempotencyKey = $scanpay->generateIdempotencyKey();
 /* == Save the key to your database with your order or charge entry == */
 
 $options = [
-    'hostname' => 'api.test.scanpay.dk',
+    'hostname' => 'api.scanpay.dev',
     'headers' => [
         'X-Cardholder-IP' => '192.168.1.1',
         'Idempotency-Key' => $idempotencyKey,
