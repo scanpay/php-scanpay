@@ -1,5 +1,8 @@
 # Scanpay PHP client
 
+[![Latest Stable Version](https://img.shields.io/github/v/release/scanpay/php-scanpay?cacheSeconds=600)](https://packagist.org/packages/scanpay/scanpay) 
+[![License](https://img.shields.io/github/license/scanpay/php-scanpay?cacheSeconds=6000)](https://github.com/scanpay/php-scanpay/blob/master/LICENSE)
+
 The Scanpay PHP client library provides convenient and simplified access to the Scanpay API from programs written in PHP. 
 If you have any questions or ideas, don't hesitate to contact us at [support@scanpay.dk](mailto:support@scanpay.dk) or chat with us on [`irc.scanpay.dev:6697`](https://chat.scanpay.dev).
 
