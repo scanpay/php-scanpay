@@ -3,8 +3,9 @@
 [![Latest Stable Version](https://img.shields.io/github/v/release/scanpay/php-scanpay?cacheSeconds=600)](https://packagist.org/packages/scanpay/scanpay) 
 [![License](https://img.shields.io/github/license/scanpay/php-scanpay?cacheSeconds=6000)](https://github.com/scanpay/php-scanpay/blob/master/LICENSE)
 
-The Scanpay PHP client library provides convenient and simplified access to the Scanpay API from programs written in PHP. 
-If you have any questions or ideas, don't hesitate to contact us at [support@scanpay.dk](mailto:support@scanpay.dk) or chat with us on [`irc.scanpay.dev:6697`](https://chat.scanpay.dev).
+The Scanpay PHP client library provides convenient and simplified access to the Scanpay API from programs written in PHP. The library is developed and maintained by Scanpay in Denmark.
+
+If you have any questions, concerns or ideas, please do not hesitate to e-mail us at [support@scanpay.dk](mailto:support@scanpay.dk) or chat with the development team on our IRC server [`irc.scanpay.dev:6697`](https://chat.scanpay.dev).
 
 ## Requirements
 
@@ -25,7 +26,7 @@ $scanpay = new Scanpay\Scanpay('API key');
 
 ### Manual installation
 
-If you do not wish to use Composer, you can download the [latest release](https://github.com/scanpaydk/php-scanpay/releases) and include it in into your project:
+If you do not wish to use Composer, you can download the [latest release](https://github.com/scanpay/php-scanpay/releases) and include it in into your project:
 
 ```php
 require('lib/Scanpay.php');
@@ -122,7 +123,7 @@ All methods, except `handlePing`, accept an optional per-request `options` objec
 
 * Set HTTP headers, e.g. the highly recommended `X-Cardholder-IP` ([example](tests/options.php#L17-L22))
 * Override API key ([example](tests/options.php#L19))
-* Change the hostname to use our test environment `api.test.scanpay.dk` ([example](tests/options.php#L14))
+* Change the hostname to use our test environment `api.scanpay.dev` ([example](tests/options.php#L14))
 * Enable debugging mode ([example](tests/options.php#L25))
 * Override cURL options with [`CURLOPT_*`](https://php.net/manual/en/function.curl-setopt.php) parameters ([example](tests/options.php#L28-L31)).
 
