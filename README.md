@@ -1,10 +1,15 @@
 # Scanpay PHP client
 
-The official PHP client library for the Scanpay API ([docs](https://docs.scanpay.dk)). You can always e-mail us at [help@scanpay.dk](mailto:help@scanpay.dk), or chat with us on IRC at libera.chat #scanpay
+The Scanpay PHP client library provides convenient and simplified access to the Scanpay API from programs written in PHP. 
+If you have any questions or ideas, don't hesitate to contact us at [support@scanpay.dk](mailto:support@scanpay.dk) or chat with us on [`irc.scanpay.dev:6697`](https://chat.scanpay.dev).
+
+## Requirements
+
+PHP version >= 5.6 with php-curl enabled. See [compatibility table](#compatibility-table).
 
 ## Installation
 
-You need PHP version >= 5.6 with php-curl enabled. The package is published at [Packagist](https://packagist.org/packages/scanpay/scanpay). You can install the library via [Composer](http://getcomposer.org/):
+The package is published at [Packagist](https://packagist.org/packages/scanpay/scanpay). You can install the library via [Composer](http://getcomposer.org/):
 
 ```bash
 composer require scanpay/scanpay
@@ -17,7 +22,7 @@ $scanpay = new Scanpay\Scanpay('API key');
 
 ### Manual installation
 
-If you do not wish to use Composer, you can download the [latest release](https://github.com/scanpaydk/php-scanpay/releases) and include in into your project:
+If you do not wish to use Composer, you can download the [latest release](https://github.com/scanpaydk/php-scanpay/releases) and include it in into your project:
 
 ```php
 require('lib/Scanpay.php');
@@ -26,11 +31,11 @@ $scanpay = new Scanpay\Scanpay('API key');
 
 ## Usage
 
-The API documentation is available [here](https://docs.scanpay.dk/). Most methods accept an optional per-request object with [options](#options), here referred to as `$options`.
+The API documentation is available [here](https://docs.scanpay.dev/). Most methods accept an optional per-request object with [options](#options), here referred to as `$options`.
 
 #### newURL(Object, options)
 
-Create a link to our hosted payment window ([docs](https://docs.scanpay.dk/payment-link) \| [example](tests/newURL.php)).
+Create a link to our hosted payment window ([docs](https://docs.scanpay.dev/payment-link) \| [example](tests/newURL.php)).
 
 ```php
 $order = [
@@ -47,7 +52,7 @@ print_r ($URL = $scanpay->newURL($order, $options)); // returns String
 
 #### seq(Integer, options)
 
-Make a sequence request to pull changes from the server ([docs](https://docs.scanpay.dk/synchronization#sequence-request) \| [example](tests/seq.php)).
+Make a sequence request to pull changes from the server ([docs](https://docs.scanpay.dev/synchronization#sequence-request) \| [example](tests/seq.php)).
 
 ```php
 $localSeq = 921;
@@ -58,7 +63,7 @@ print_r ('New local seq after applying all changes: ' . obj.seq);
 
 #### handlePing(Object)
 
-Handle and validate synchronization pings ([docs](https://docs.scanpay.dk/synchronization#ping-service) \| [example](tests/handlePing.php)).
+Handle and validate synchronization pings ([docs](https://docs.scanpay.dev/synchronization#ping-service) \| [example](tests/handlePing.php)).
 ```php
 print_r ($json = $scanpay->handlePing());
 print_r ($json.seq);
@@ -84,7 +89,7 @@ $scanpay->capture($trnid, $data, $options);
 
 #### charge(Integer, Object, options)
 
-Charge a subscriber ([docs](https://docs.scanpay.dk/subscriptions/charge-subscriber) \| [example](tests/charge.php)).
+Charge a subscriber ([docs](https://docs.scanpay.dev/subscriptions/charge-subscriber) \| [example](tests/charge.php)).
 
 ```php
 $subscriberid = 2;
@@ -102,7 +107,7 @@ $scanpay->charge($subscriberid, $charge, $options);
 
 #### renew(Integer, Object, options)
 
-Create a link to renew the payment method for a subscriber. ([docs](https://docs.scanpay.dk/subscriptions/renew-subscriber) \| [example](tests/renew.php)).
+Create a link to renew the payment method for a subscriber. ([docs](https://docs.scanpay.dev/subscriptions/renew-subscriber) \| [example](tests/renew.php)).
 
 ```php
 print_r ($URL = $scanpay->renew($subscriberid, [], $options)); // returns String
