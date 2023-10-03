@@ -17,21 +17,15 @@ class Scanpay
 
     public function __construct($apikey = '', $opts = [])
     {
-        // Check if libcurl is enabled
         if (!function_exists('curl_init')) {
             die("ERROR: Please enable php-curl\n");
         }
-
-        // Public cURL handle (reuse handle)
-        $this->ch = curl_init();
+        $this->ch = curl_init(); // reuse handle
         $this->headers = [
             'authorization' => 'Authorization: Basic ' . base64_encode($apikey),
             'x-sdk' => 'X-SDK: PHP-1.5.2/' . PHP_VERSION,
             'content-type' => 'Content-Type: application/json',
-            'expect' => 'Expect: ',
         ];
-        /* The 'Expect' header will disable libcurl's expect-logic,
-            which will save us a HTTP roundtrip on POSTs >1024b. */
         $this->apikey = $apikey;
         $this->opts = $opts;
     }
