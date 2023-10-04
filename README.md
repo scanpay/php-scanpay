@@ -131,6 +131,8 @@ All methods, except `handlePing`, accept an optional per-request `options` objec
 
 | Feature                                   | Version |
 | :---------------------------------------- | :-----: |
+| Typed class properties                    | 7.4     |
+| Type declarations                         | 7.4     |
 | Null coalescing operator                  | 7.4     |
 | hash_equals                               | 5.6     |
 | curl_strerror                             | 5.5     |

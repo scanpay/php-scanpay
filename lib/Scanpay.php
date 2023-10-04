@@ -8,13 +8,13 @@ class IdempotentResponseException extends \Exception
 
 class Scanpay
 {
-    protected $ch;
-    protected $headers;
-    protected $apikey;
-    protected $idemstatus;
-    protected $opts;
+    private object $ch;
+    private array $headers;
+    private string $apikey;
+    private ?string $idemstatus;
+    private array $opts;
 
-    public function __construct($apikey = '', $opts = [])
+    public function __construct(string $apikey = '', array $opts = [])
     {
         if (!function_exists('curl_init')) {
             die("ERROR: Please enable php-curl\n");
@@ -34,7 +34,7 @@ class Scanpay
         }
     }
 
-    protected function headerCallback($curl, $hdr)
+    private function headerCallback(object $curl, string $hdr)
     {
         $header = explode(':', $hdr, 2);
         // Skip invalid headers
@@ -46,7 +46,7 @@ class Scanpay
         return strlen($hdr);
     }
 
-    protected function request($path, $opts = [], $data = null)
+    private function request(string $path, array $opts = [], array $data = null): array
     {
         $this->idemstatus = null;
         $headers = $this->headers;
@@ -105,7 +105,7 @@ class Scanpay
     }
 
     // newURL: Create a new payment link
-    public function newURL($data, $opts = [])
+    public function newURL(array $data, array $opts = []): string
     {
         $o = $this->request('/v1/new', $opts, $data);
         if (isset($o['url']) && filter_var($o['url'], FILTER_VALIDATE_URL)) {
@@ -115,13 +115,9 @@ class Scanpay
     }
 
     // seq: Get array of changes since the reqested seqnum
-    public function seq($seqnum, $opts = [])
+    public function seq(int $seqnum, array $opts = []): array
     {
-        if (!is_numeric($seqnum)) {
-            throw new \Exception('seq argument must be an integer');
-        }
         $o = $this->request('/v1/seq/' . $seqnum, $opts);
-
         if (
             isset($o['seq']) && is_int($o['seq']) &&
             isset($o['changes']) && is_array($o['changes'])
@@ -132,7 +128,7 @@ class Scanpay
     }
 
     // handlePing: Convert data to JSON and validate integrity
-    public function handlePing($opts = [])
+    public function handlePing(array $opts = []): array
     {
         ignore_user_abort(true);
 
@@ -169,17 +165,17 @@ class Scanpay
         throw new \Exception('missing fields in Scanpay response');
     }
 
-    public function capture($trnid, $data, $opts = [])
+    public function capture(int $trnid, array $data, array $opts = []): array
     {
         return $this->request("/v1/transactions/$trnid/capture", $opts, $data);
     }
 
-    public function generateIdempotencyKey()
+    public function generateIdempotencyKey(): string
     {
         return rtrim(base64_encode(random_bytes(32)), '=');
     }
 
-    public function charge($subid, $data, $opts = [])
+    public function charge(int $subid, array $data, array $opts = []): array
     {
         $o = $this->request("/v1/subscribers/$subid/charge", $opts, $data);
         if (
@@ -192,7 +188,7 @@ class Scanpay
         throw new \Exception('Invalid response from server');
     }
 
-    public function renew($subid, $data, $opts = [])
+    public function renew(int $subid, array $data, array $opts = []): string
     {
         $o = $this->request("/v1/subscribers/$subid/renew", $opts, $data);
         if (isset($o['url']) && filter_var($o['url'], FILTER_VALIDATE_URL)) {
