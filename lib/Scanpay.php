@@ -12,7 +12,6 @@ class Scanpay
     protected $headers;
     protected $apikey;
     protected $idemstatus;
-    protected $useidem;
     protected $opts;
 
     public function __construct($apikey = '', $opts = [])
@@ -28,22 +27,11 @@ class Scanpay
         ];
         $this->apikey = $apikey;
         $this->opts = $opts;
-    }
-
-    /* Create indexed array from associative array ($this->headers).
-        Let the merchant overwrite the headers. */
-    protected function httpHeaders($oldHeaders, $o = [])
-    {
-        $ret = $oldHeaders;
-        if (isset($o['headers'])) {
-            foreach ($o['headers'] as $key => &$val) {
-                $ret[strtolower($key)] = $key . ': ' . $val;
-            }
-            if (isset($ret['idempotency-key'])) {
-                $this->useidem = true;
+        if (isset($opts['headers'])) {
+            foreach ($opts['headers'] as $key => &$val) {
+                $this->headers[strtolower($key)] = $key . ': ' . $val;
             }
         }
-        return $ret;
     }
 
     protected function headerCallback($curl, $hdr)
@@ -60,40 +48,35 @@ class Scanpay
 
     protected function request($path, $opts = [], $data = null)
     {
-        $this->useidem = false;
         $this->idemstatus = null;
-
-        // Merge headers
-        $headers = $this->httpHeaders($this->headers, $this->opts);
-        $headers = array_values($this->httpHeaders($headers, $opts));
-
-        // Merge other options
+        $headers = $this->headers;
+        if (isset($opts['headers'])) {
+            foreach ($opts['headers'] as $key => &$val) {
+                $headers[strtolower($key)] = $key . ': ' . $val;
+            }
+        }
         $opts = array_merge($this->opts, $opts);
         $hostname = (isset($opts['hostname'])) ? $opts['hostname'] : 'api.scanpay.dk';
 
         $curlopts = [
             CURLOPT_URL => 'https://' . $hostname . $path,
-            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_HTTPHEADER => array_values($headers),
             CURLOPT_CUSTOMREQUEST => ($data === null) ? 'GET' : 'POST',
             CURLOPT_VERBOSE => isset($opts['debug']) ? $opts['debug'] : 0,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_CONNECTTIMEOUT => 20,
             CURLOPT_TIMEOUT => 120,
         ];
-
         if ($data !== null) {
             $curlopts[CURLOPT_POSTFIELDS] = json_encode($data, JSON_UNESCAPED_SLASHES);
             if ($curlopts[CURLOPT_POSTFIELDS] === false) {
                 throw new \Exception('Failed to JSON encode request to Scanpay: ' . json_last_error_msg());
             }
         }
-
-        if ($this->useidem) {
-            // this function is called by cURL for each header received
+        if (isset($headers['idempotency-key'])) {
             $curlopts[CURLOPT_HEADERFUNCTION] = [$this, 'headerCallback'];
         }
 
-        // Let the merchant override $curlopts.
         if (isset($opts['curl'])) {
             foreach ($opts['curl'] as $key => &$val) {
                 $curlopts[$key] = $val;
@@ -112,7 +95,7 @@ class Scanpay
         }
 
         // Validate Idempotency-Status
-        if ($this->useidem && $this->idemstatus !== 'OK') {
+        if (isset($headers['idempotency-key']) && $this->idemstatus !== 'OK') {
             throw new \Exception("Server failed to provide idempotency. Scanpay returned $statusCode - " . explode("\n", $result)[0]);
         }
 
