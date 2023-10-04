@@ -1,70 +1,42 @@
 <?php
 
 /*
-    Docs: https://docs.scanpay.dk/subscriptions/
-    help@scanpay.dk || irc.libera.chat:6697 #scanpay
+    Docs: https://docs.scanpay.dev/subscriptions/
+    support@scanpay.dk || irc.scanpay.dev:6697 #support
 */
 require dirname(__FILE__)  . '/../lib/Scanpay.php';
 
 $apikey = '1153:YHZIUGQw6NkCIYa3mG6CWcgShnl13xuI7ODFUYuMy0j790Q6ThwBEjxfWFXwJZ0W';
+$subscriberid = 68;
 $scanpay = new Scanpay\Scanpay($apikey);
 
-$idempotencyKey = $scanpay->generateIdempotencyKey();
-/* == Save the key to your database with your order or charge entry == */
-
-$options = [
-    'hostname' => 'api.scanpay.dev',
-    'headers' => [
-        'X-Cardholder-IP' => '192.168.1.1',
-        'Idempotency-Key' => $idempotencyKey,
-    ],
-];
-
-$subscriberid = 68;
-
-$charge = [
-    'orderid'    => 'charge-1023',
+$data = [
+    'orderid'    => uniqid(),
+    'autocapture'   => false,
     'items'    => [
         [
             'name'     => 'Pink Floyd: The Dark Side Of The Moon',
             'quantity' => 2,
             'total'    => '199.99 DKK',
             'sku'      => 'fadf23',
-        ], [
-            'name'     => '巨人宏偉的帽子',
-            'quantity' => 2,
-            'total'    => '420 DKK',
-            'sku'      => '124',
-        ],
+        ]
     ],
-    'billing'  => [
-        'name'    => 'John Doe',
-        'company' => 'The Shop A/S',
-        'email'   => 'john@doe.com',
-        'phone'   => '+4512345678',
-        'address' => ['Langgade 23, 2. th'],
-        'city'    => 'Havneby',
-        'zip'     => '1234',
-        'state'   => '',
-        'country' => 'DK',
-        'vatin'   => '35413308',
-        'gln'     => '7495563456235',
-    ],
-    'shipping' => [
-        'name'    => 'Jan Dåh',
-        'company' => 'The Choppa A/S',
-        'email'   => 'jan@doh.com',
-        'phone'   => '+4587654321',
-        'address' => ['Langgade 23, 1. th', 'C/O The Choppa'],
-        'city'    => 'Haveby',
-        'zip'     => '1235',
-        'state'   => '',
-        'country' => 'DK',
+];
+$options = [
+    'hostname' => 'api.scanpay.dev',
+    //'debug' => 1,
+    'headers' => [
+        'Idempotency-Key' => $scanpay->generateIdempotencyKey(),
     ],
 ];
 
 try {
-    $chargeResponse = $scanpay->charge($subscriberid, $charge, $options);
+    echo "* 1st charge with orderid #{$data['orderid']} and idempotency-key: {$options['headers']['Idempotency-Key']}\n";
+    $scanpay->charge($subscriberid, $data, $options);
+    echo "* 2nd charge with orderid #{$data['orderid']} and idempotency-key: {$options['headers']['Idempotency-Key']}\n";
+    $scanpay->charge($subscriberid, $data, $options);
+    echo "* 3rd charge with orderid #{$data['orderid']} and idempotency-key: {$options['headers']['Idempotency-Key']}\n";
+    $scanpay->charge($subscriberid, $data, $options);
 } catch (Scanpay\IdempotentResponseException $e) {
     echo('Received idempotent error response: ' . $e->getMessage() . "\n");
     die('You can generate a new idempotency key and try again later');
@@ -74,19 +46,19 @@ try {
     die('Done for now. Retry later with same idempotency key ' . $idempotencyKey);
 }
 
-# Calculate total so we can print it
-$tot = 0;
-foreach ($charge['items'] as $item) {
-    $tot += explode(' ', $item['total'])[0];
+$seq = 1200; // $db['seq'];
+while (1) {
+    $res = $scanpay->seq($seq, ['hostname' => 'api.scanpay.dev']);
+    if (count($res['changes']) === 0) {
+        break; // done
+    }
+    foreach ($res['changes'] as $change) {
+        if (isset($change['orderid']) && $change['orderid'] === $data['orderid']) {
+            echo "\nFound 1 charge with orderid #{$data['orderid']} in seq feed.\n";
+        }
+    }
+    $seq = $res['seq'];
 }
-$tot .= ' ' . explode(' ', $item['total'])[1];
-
-if ($chargeResponse['totals']['authorized'] < $tot) {
-    echo "Charge resulted in a partial authorization, charged {$chargeResponse['totals']['authorized']}" .
-        " of $tot from subscriber #$subscriberid (Created trn #$chargeResponse[id])\n";
-} else {
-    echo "Successfully charged $tot" .
-        " from subscriber #$subscriberid (Created trn #$chargeResponse[id])\n";
-}
+echo "New seq is: $seq\n"
 
 ?>
