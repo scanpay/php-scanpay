@@ -1,6 +1,6 @@
 # Scanpay PHP client
 
-[![Latest Stable Version](https://img.shields.io/github/v/release/scanpay/php-scanpay?cacheSeconds=600)](https://packagist.org/packages/scanpay/scanpay) 
+[![Latest Stable Version](https://img.shields.io/github/v/release/scanpay/php-scanpay?cacheSeconds=600)](https://packagist.org/packages/scanpay/scanpay)
 [![License](https://img.shields.io/github/license/scanpay/php-scanpay?cacheSeconds=6000)](https://github.com/scanpay/php-scanpay/blob/master/LICENSE)
 
 The Scanpay PHP client library provides convenient and simplified access to the Scanpay API from programs written in PHP. The library is developed and maintained by Scanpay in Denmark.
@@ -9,7 +9,7 @@ If you have any questions, concerns or ideas, please do not hesitate to e-mail u
 
 ## Requirements
 
-PHP version >= 5.6 with php-curl enabled. See [compatibility table](#compatibility-table).
+PHP version >= 7.4 with php-curl enabled. See [compatibility table](#compatibility-table).
 
 ## Installation
 
@@ -131,6 +131,7 @@ All methods, except `handlePing`, accept an optional per-request `options` objec
 
 | Feature                                   | Version |
 | :---------------------------------------- | :-----: |
+| Null coalescing operator                  | 7.4     |
 | hash_equals                               | 5.6     |
 | curl_strerror                             | 5.5     |
 | Array, short syntax                       | 5.4     |

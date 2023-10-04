@@ -56,13 +56,11 @@ class Scanpay
             }
         }
         $opts = array_merge($this->opts, $opts);
-        $hostname = (isset($opts['hostname'])) ? $opts['hostname'] : 'api.scanpay.dk';
-
         $curlopts = [
-            CURLOPT_URL => 'https://' . $hostname . $path,
+            CURLOPT_URL => 'https://' . ($opts['hostname'] ?? 'api.scanpay.dk') . $path,
             CURLOPT_HTTPHEADER => array_values($headers),
             CURLOPT_CUSTOMREQUEST => ($data === null) ? 'GET' : 'POST',
-            CURLOPT_VERBOSE => isset($opts['debug']) ? $opts['debug'] : 0,
+            CURLOPT_VERBOSE => $opts['debug'] ?? 0,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_CONNECTTIMEOUT => 20,
             CURLOPT_TIMEOUT => 120,
