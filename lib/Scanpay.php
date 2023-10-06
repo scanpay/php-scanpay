@@ -8,7 +8,7 @@ class IdempotentResponseException extends \Exception
 
 class Scanpay
 {
-    private object $ch; // CurlHandle. Not allowed until 8.0
+    private $ch; // CurlHandle class is added PHP 8.0
     private array $headers;
     private string $apikey;
     private string $idemstatus;
@@ -59,7 +59,7 @@ class Scanpay
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array_values($headers),
             CURLOPT_VERBOSE => $opts['debug'] ?? 0,
-            CURLOPT_TCP_KEEPALIVE => 1, // CURLOPT_TCP_KEEPINTVL & CURLOPT_TCP_KEEPIDLE
+            CURLOPT_TCP_KEEPALIVE => 1, // TODO: CURLOPT_TCP_KEEPINTVL & CURLOPT_TCP_KEEPIDLE
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_CONNECTTIMEOUT => 20,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2TLS,
@@ -89,21 +89,21 @@ class Scanpay
             throw new \Exception(curl_strerror(curl_errno($this->ch)));
         }
 
-        $statusCode = curl_getinfo($this->ch, CURLINFO_RESPONSE_CODE);
+        $statusCode = (int) curl_getinfo($this->ch, CURLINFO_RESPONSE_CODE);
         if ($statusCode !== 200) {
             throw new \Exception(('Scanpay returned "' . explode("\n", $result)[0] . '"'));
         }
 
-        // Validate Idempotency-Status
         if (isset($headers['idempotency-key']) && $this->idemstatus !== 'ok') {
-            throw new \Exception("Server failed to provide idempotency. Scanpay returned $statusCode - " . explode("\n", $result)[0]);
+            throw new \Exception("Server failed to provide idempotency. Scanpay returned $statusCode - "
+                . explode("\n", $result)[0]);
         }
 
-        // Decode the json response (@: suppress warnings)
-        if (!is_array($resobj = @json_decode($result, true))) {
+        $json = json_decode($result, true);
+        if (!is_array($json)) {
             throw new IdempotentResponseException('Invalid JSON response from server');
         }
-        return $resobj;
+        return $json;
     }
 
     // newURL: Create a new payment link

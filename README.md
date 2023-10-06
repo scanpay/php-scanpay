@@ -2,6 +2,7 @@
 
 [![Latest Stable Version](https://img.shields.io/github/v/release/scanpay/php-scanpay?cacheSeconds=600)](https://packagist.org/packages/scanpay/scanpay)
 [![License](https://img.shields.io/github/license/scanpay/php-scanpay?cacheSeconds=6000)](https://github.com/scanpay/php-scanpay/blob/master/LICENSE)
+[![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/scanpay/php-scanpay?cacheSeconds=6000)](https://www.codefactor.io/repository/github/scanpay/php-scanpay)
 
 The Scanpay PHP client library provides convenient and simplified access to the Scanpay API from programs written in PHP. The library is developed and maintained by Scanpay in Denmark.
 
