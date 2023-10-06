@@ -8,25 +8,25 @@ class IdempotentResponseException extends \Exception
 
 class Scanpay
 {
-    private object $ch;
+    private object $ch; // CurlHandle. Not allowed until 8.0
     private array $headers;
     private string $apikey;
-    private ?string $idemstatus;
+    private string $idemstatus;
     private array $opts;
 
-    public function __construct(string $apikey = '', array $opts = [])
+    public function __construct(?string $apikey = '', array $opts = [])
     {
         if (!function_exists('curl_init')) {
             die("ERROR: Please enable php-curl\n");
         }
         $this->ch = curl_init(); // reuse handle
-        $this->headers = [
-            'authorization' => 'Authorization: Basic ' . base64_encode($apikey),
-            'x-sdk' => 'X-SDK: PHP-1.5.2/' . PHP_VERSION,
-            'content-type' => 'Content-Type: application/json',
-        ];
         $this->apikey = $apikey;
         $this->opts = $opts;
+        $this->headers = [
+            'authorization' => 'Authorization: Basic ' . base64_encode($apikey),
+            'x-sdk' => 'X-SDK: PHP-2.0.0-beta/' . PHP_VERSION,
+            'content-type' => 'Content-Type: application/json',
+        ];
         if (isset($opts['headers'])) {
             foreach ($opts['headers'] as $key => &$val) {
                 $this->headers[strtolower($key)] = $key . ': ' . $val;
@@ -34,21 +34,18 @@ class Scanpay
         }
     }
 
-    private function headerCallback(object $curl, string $hdr)
+    private function headerCallback(object $handle, string $header)
     {
-        $header = explode(':', $hdr, 2);
-        // Skip invalid headers
-        if (count($header) < 2) return strlen($hdr);
-
-        if (strtolower(trim($header[0])) === 'idempotency-status') {
-            $this->idemstatus = strtoupper(trim($header[1]));
+        $arr = explode(':', $header, 2);
+        if (isset($arr[1]) && strtolower(trim($arr[0])) === 'idempotency-status') {
+            $this->idemstatus = strtolower(trim($arr[1]));
         }
-        return strlen($hdr);
+        return strlen($header);
     }
 
     private function request(string $path, array $opts = [], array $data = null): array
     {
-        $this->idemstatus = null;
+        $this->idemstatus = '';
         $headers = $this->headers;
         if (isset($opts['headers'])) {
             foreach ($opts['headers'] as $key => &$val) {
@@ -56,16 +53,22 @@ class Scanpay
             }
         }
         $opts = array_merge($this->opts, $opts);
+
         $curlopts = [
             CURLOPT_URL => 'https://' . ($opts['hostname'] ?? 'api.scanpay.dk') . $path,
+            CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array_values($headers),
-            CURLOPT_CUSTOMREQUEST => ($data === null) ? 'GET' : 'POST',
             CURLOPT_VERBOSE => $opts['debug'] ?? 0,
+            CURLOPT_TCP_KEEPALIVE => 1, // CURLOPT_TCP_KEEPINTVL & CURLOPT_TCP_KEEPIDLE
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_CONNECTTIMEOUT => 20,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2TLS,
             CURLOPT_TIMEOUT => 120,
+            CURLOPT_DNS_CACHE_TIMEOUT => 180,
+            CURLOPT_DNS_SHUFFLE_ADDRESSES => 1,
         ];
-        if ($data !== null) {
+        if (isset($data)) {
+            $curlopts[CURLOPT_CUSTOMREQUEST] = 'POST';
             $curlopts[CURLOPT_POSTFIELDS] = json_encode($data, JSON_UNESCAPED_SLASHES);
             if ($curlopts[CURLOPT_POSTFIELDS] === false) {
                 throw new \Exception('Failed to JSON encode request to Scanpay: ' . json_last_error_msg());
@@ -81,9 +84,8 @@ class Scanpay
             }
         }
         curl_setopt_array($this->ch, $curlopts);
-
         $result = curl_exec($this->ch);
-        if (!$result) {
+        if ($result === false) {
             throw new \Exception(curl_strerror(curl_errno($this->ch)));
         }
 
@@ -93,7 +95,7 @@ class Scanpay
         }
 
         // Validate Idempotency-Status
-        if (isset($headers['idempotency-key']) && $this->idemstatus !== 'OK') {
+        if (isset($headers['idempotency-key']) && $this->idemstatus !== 'ok') {
             throw new \Exception("Server failed to provide idempotency. Scanpay returned $statusCode - " . explode("\n", $result)[0]);
         }
 
