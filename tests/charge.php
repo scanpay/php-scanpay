@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /*
@@ -73,6 +74,4 @@ while (1) {
     }
     $seq = $res['seq'];
 }
-echo "New seq is: $seq\n"
-
-?>
+echo "New seq is: $seq\n";
