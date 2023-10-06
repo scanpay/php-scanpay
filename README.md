@@ -9,7 +9,7 @@ If you have any questions, concerns or ideas, please do not hesitate to e-mail u
 
 ## Requirements
 
-PHP version >= 7.4 with php-curl enabled. See [compatibility table](#compatibility-table).
+PHP version >= 7.4 with php-curl (libcurl >= 7.60.0). See [compatibility table](#compatibility-table).
 
 ## Installation
 
@@ -129,20 +129,20 @@ All methods, except `handlePing`, accept an optional per-request `options` objec
 
 ## Compatibility table
 
-| Feature                                   | Version |
+| PHP                                       | Version |
 | :---------------------------------------- | :-----: |
+| ~~CurlHandle class~~ (polyfilled)         | 8.0     |
 | Typed class properties                    | 7.4     |
 | Type declarations                         | 7.4     |
 | Null coalescing operator                  | 7.4     |
 | hash_equals                               | 5.6     |
 | curl_strerror                             | 5.5     |
-| Array, short syntax                       | 5.4     |
-| Namespaces                                | 5.3.0   |
-| json_decode                               | 5.2.0   |
-| curl_setopt_array                         | 5.1.3   |
-| hash_hmac                                 | 5.1.2   |
-| Exception class                           | 5.1.0   |
-| Default function parameters               | 5.0.0   |
+
+| Libcurl                                   | Version |
+| :---------------------------------------- | :-----: |
+| CURLOPT_DNS_SHUFFLE_ADDRESSES             | 7.60.0  |
+| CURLOPT_TCP_KEEPALIVE                     | 7.25.0  |
+
 
 ## License
 
