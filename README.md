@@ -22,6 +22,7 @@ composer require scanpay/scanpay
 You can then include it in your project with:
 
 ```php
+require_once 'vendor/autoload.php'; // composer autoload
 $scanpay = new Scanpay\Scanpay('API key');
 ```
 
