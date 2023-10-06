@@ -2,7 +2,7 @@
 
 [![Latest Stable Version](https://img.shields.io/github/v/release/scanpay/php-scanpay?cacheSeconds=600)](https://packagist.org/packages/scanpay/scanpay)
 [![License](https://img.shields.io/github/license/scanpay/php-scanpay?cacheSeconds=6000)](https://github.com/scanpay/php-scanpay/blob/master/LICENSE)
-[![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/scanpay/php-scanpay?cacheSeconds=6000)](https://www.codefactor.io/repository/github/scanpay/php-scanpay)
+[![CodeFactor](https://www.codefactor.io/repository/github/scanpay/php-scanpay/badge)](https://www.codefactor.io/repository/github/scanpay/php-scanpay)
 
 The Scanpay PHP client library provides convenient and simplified access to the Scanpay API from programs written in PHP. The library is developed and maintained by Scanpay in Denmark.
 
@@ -44,7 +44,7 @@ Create a link to our hosted payment window ([docs](https://docs.scanpay.dev/paym
 
 ```php
 $order = [
-    'orderid'    => '123',
+    'orderid'    => 'order_184',
     'items' => [
         [
             'name'     => 'Pink Floyd: The Dark Side Of The Moon',
@@ -52,18 +52,20 @@ $order = [
         ]
     ]
 ];
-print_r ($URL = $scanpay->newURL($order, $options)); // returns String
+$paymentLink = $scanpay->newURL($order, $options);
 ```
 
 #### seq(Integer, options)
 
-Make a sequence request to pull changes from the server ([docs](https://docs.scanpay.dev/synchronization#sequence-request) \| [example](tests/seq.php)).
+Fetch changes after a specified sequence number ([docs](https://docs.scanpay.dev/synchronization#sequence-request) \| [example](tests/seq.php)).
 
 ```php
-$localSeq = 921;
-$obj = $scanpay->seq($localSeq, $options);
-print_r (obj.changes);
-print_r ('New local seq after applying all changes: ' . obj.seq);
+$localSeq = (int) $yourDB['seq']; // Locally stored sequence number
+$arr = $scanpay->seq($localSeq, $options);
+foreach ($arr['changes'] as $change) {
+    print_r($change); // Apply change in your DB
+}
+$localSeq = (int) $arr.seq;
 ```
 
 #### handlePing(Object)
@@ -81,15 +83,17 @@ This method accepts an optional object with the following arguments:
 
 #### capture(Integer, Object, options)
 
-Capture an amount from a transaction.
+Capture an authorized amount from a transaction. `index` is the number of actions recorded by your system, and it's a security measure against double captures.
 
 ```php
-$trnid = 2;
+$order = (arr) $yourDB.getOrder('order_184');
+$trnID = (int) $order['scanpay']['id'];
+$nActs = count($order['scanpay']['acts']); // $change['acts'] from seq()
 $data = [
-    'total' => '1 DKK',
-    'index' => 0,
-};
-$scanpay->capture($trnid, $data, $options);
+    'total' => $order['amount'], // e.g. '199,99 DKK'
+    'index' => $nActs,
+];
+$scanpay->capture($trnID, $data, $options);
 ```
 
 #### charge(Integer, Object, options)
@@ -99,14 +103,14 @@ Charge a subscriber ([docs](https://docs.scanpay.dev/subscriptions/charge-subscr
 ```php
 $subscriberid = 2;
 $charge = [
-    'orderid'    => 'charge-1023',
+    'orderid'    => 'charge_1023',
     'items'    => [
         [
             'name'     => 'Pink Floyd: The Dark Side Of The Moon',
             'total'    => '199.99 DKK',
         ]
     ]
-};
+];
 $scanpay->charge($subscriberid, $charge, $options);
 ```
 
@@ -115,7 +119,7 @@ $scanpay->charge($subscriberid, $charge, $options);
 Create a link to renew the payment method for a subscriber. ([docs](https://docs.scanpay.dev/subscriptions/renew-subscriber) \| [example](tests/renew.php)).
 
 ```php
-print_r ($URL = $scanpay->renew($subscriberid, [], $options)); // returns String
+$subcriptionLink = $scanpay->renew($subscriberid, [], $options);
 ```
 
 ## Options
@@ -138,11 +142,6 @@ All methods, except `handlePing`, accept an optional per-request `options` objec
 | Null coalescing operator                  | 7.4     |
 | hash_equals                               | 5.6     |
 | curl_strerror                             | 5.5     |
-
-| Libcurl                                   | Version |
-| :---------------------------------------- | :-----: |
-| CURLOPT_DNS_SHUFFLE_ADDRESSES             | 7.60.0  |
-| CURLOPT_TCP_KEEPALIVE                     | 7.25.0  |
 
 
 ## License
