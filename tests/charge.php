@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /*
     Docs: https://docs.scanpay.dev/subscriptions/
@@ -30,12 +31,14 @@ $options = [
     ],
 ];
 
+$idemkey = $options['headers']['Idempotency-Key'];
+$orderid = $data['orderid'];
 try {
-    echo "* 1st charge with orderid #{$data['orderid']} and idempotency-key: {$options['headers']['Idempotency-Key']}\n";
+    echo "[Charge] 1st charge with orderid: #$orderid and idempotency-key: $idemkey\n";
     $scanpay->charge($subscriberid, $data, $options);
-    echo "* 2nd charge with orderid #{$data['orderid']} and idempotency-key: {$options['headers']['Idempotency-Key']}\n";
+    echo "[Charge] 2nd charge with orderid: #$orderid and idempotency-key: $idemkey (idempotency test)\n";
     $scanpay->charge($subscriberid, $data, $options);
-    echo "* 3rd charge with orderid #{$data['orderid']} and idempotency-key: {$options['headers']['Idempotency-Key']}\n";
+    echo "[Charge] 3rd charge with orderid: #$orderid and idempotency-key: $idemkey (idempotency test)\n";
     $scanpay->charge($subscriberid, $data, $options);
 } catch (Scanpay\IdempotentResponseException $e) {
     echo('Received idempotent error response: ' . $e->getMessage() . "\n");
@@ -46,15 +49,26 @@ try {
     die('Done for now. Retry later with same idempotency key ' . $idempotencyKey);
 }
 
-$seq = 1200; // $db['seq'];
+echo "[Seq] Searching for orderid #$orderid in seq feed...\n";
+$seq = 1200;
 while (1) {
     $res = $scanpay->seq($seq, ['hostname' => 'api.scanpay.dev']);
     if (count($res['changes']) === 0) {
+        echo "[Seq] Sync is completed.";
         break; // done
     }
     foreach ($res['changes'] as $change) {
         if (isset($change['orderid']) && $change['orderid'] === $data['orderid']) {
-            echo "\nFound 1 charge with orderid #{$data['orderid']} in seq feed.\n";
+            if ($change['totals']['authorized'] !== $change['totals']['captured']) {
+                echo "      Found #$orderid in seq feed. Charge ID is #{$change['id']}\n";
+                echo "      Capturing charge with #{$change['id']} ...\n";
+                $capt = $scanpay->capture($change['id'], [
+                    'total' => $change['totals']['authorized'],
+                    'index' => 0,
+                ], ['hostname' => 'api.scanpay.dev']);
+            } else {
+                echo "      Charge #{$change['id']} was successfully captured. \n";
+            }
         }
     }
     $seq = $res['seq'];
