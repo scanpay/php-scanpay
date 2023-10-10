@@ -22,24 +22,24 @@ composer require scanpay/scanpay
 You can then include it in your project with:
 
 ```php
-require_once 'vendor/autoload.php'; // composer autoload
+require 'vendor/autoload.php'; // composer autoload
 $scanpay = new Scanpay\Scanpay('API key');
 ```
 
 ### Manual installation
 
-If you do not wish to use Composer, you can download the [latest release](https://github.com/scanpay/php-scanpay/releases) and include it in into your project:
+If you do not wish to use Composer, you can download the [latest release](https://github.com/scanpay/php-scanpay/releases) and include it in your project:
 
 ```php
-require('lib/Scanpay.php');
+require 'lib/Scanpay.php';
 $scanpay = new Scanpay\Scanpay('API key');
 ```
 
 ## Usage
 
-The API documentation is available [here](https://docs.scanpay.dev/). Most methods accept an optional per-request object with [options](#options), here referred to as `$options`.
+The API documentation is available [here](https://docs.scanpay.dev/). Most methods accept an optional per-request array with [options](#options), referred to as `$options`.
 
-#### newURL(Object, options)
+#### newURL(Array, $options)
 
 Create a link to our hosted payment window ([docs](https://docs.scanpay.dev/payment-link) \| [example](tests/newURL.php)).
 
@@ -56,7 +56,7 @@ $order = [
 $paymentLink = $scanpay->newURL($order, $options);
 ```
 
-#### seq(Integer, options)
+#### seq(Integer, $options)
 
 Fetch changes after a specified sequence number ([docs](https://docs.scanpay.dev/synchronization#sequence-request) \| [example](tests/seq.php)).
 
@@ -69,20 +69,20 @@ foreach ($arr['changes'] as $change) {
 $localSeq = (int) $arr.seq;
 ```
 
-#### handlePing(Object)
+#### handlePing(Array)
 
 Handle and validate synchronization pings ([docs](https://docs.scanpay.dev/synchronization#ping-service) \| [example](tests/handlePing.php)).
 ```php
 print_r ($json = $scanpay->handlePing());
 print_r ($json.seq);
 ```
-This method accepts an optional object with the following arguments:
+This method accepts an optional array with the following arguments:
 
 * `signature`, ie. a string with the X-Signature header (String)
 * `body`, ie. the HTTP message body (String).
 * `debug` default is false. (Boolean)
 
-#### capture(Integer, Object, options)
+#### capture(Integer, Array, $options)
 
 Capture an authorized amount from a transaction. `index` is the number of actions recorded by your system, and it's a security measure against double captures.
 
@@ -97,7 +97,7 @@ $data = [
 $scanpay->capture($trnID, $data, $options);
 ```
 
-#### charge(Integer, Object, options)
+#### charge(Integer, Array, $options)
 
 Charge a subscriber ([docs](https://docs.scanpay.dev/subscriptions/charge-subscriber) \| [example](tests/charge.php)).
 
@@ -115,7 +115,7 @@ $charge = [
 $scanpay->charge($subscriberid, $charge, $options);
 ```
 
-#### renew(Integer, Object, options)
+#### renew(Integer, Array, $options)
 
 Create a link to renew the payment method for a subscriber. ([docs](https://docs.scanpay.dev/subscriptions/renew-subscriber) \| [example](tests/renew.php)).
 
@@ -125,7 +125,7 @@ $subcriptionLink = $scanpay->renew($subscriberid, [], $options);
 
 ## Options
 
-All methods, except `handlePing`, accept an optional per-request `options` object. You can use this to:
+All methods, except `handlePing`, accept an optional per-request `$options` array. You can use this to:
 
 * Set HTTP headers, e.g. the highly recommended `X-Cardholder-IP` ([example](tests/options.php#L17-L22))
 * Override API key ([example](tests/options.php#L19))
