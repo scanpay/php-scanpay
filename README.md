@@ -69,18 +69,16 @@ foreach ($arr['changes'] as $change) {
 $localSeq = (int) $arr.seq;
 ```
 
-#### handlePing(Array)
+#### parsePing(String, String)
 
-Handle and validate synchronization pings ([docs](https://docs.scanpay.dev/synchronization#ping-service) \| [example](tests/handlePing.php)).
+Validate and parse scanpay pings ([docs](https://docs.scanpay.dev/synchronization#ping-service) \| [example](tests/parsePing.php)).
+
 ```php
-print_r ($json = $scanpay->handlePing());
-print_r ($json.seq);
+$ping = $scanpay->parsePing(
+    file_get_contents('php://input', false, null, 0, 512),
+    $_SERVER['HTTP_X_SIGNATURE'] // X-Signature HTTP header
+);
 ```
-This method accepts an optional array with the following arguments:
-
-* `signature`, ie. a string with the X-Signature header (String)
-* `body`, ie. the HTTP message body (String).
-* `debug` default is false. (Boolean)
 
 #### capture(Integer, Array, $options)
 
@@ -125,7 +123,7 @@ $subcriptionLink = $scanpay->renew($subscriberid, [], $options);
 
 ## Options
 
-All methods, except `handlePing`, accept an optional per-request `$options` array. You can use this to:
+All methods, except `parsePing`, accept an optional per-request `$options` array. You can use this to:
 
 * Set HTTP headers, e.g. the highly recommended `X-Cardholder-IP` ([example](tests/options.php#L17-L22))
 * Override API key ([example](tests/options.php#L19))

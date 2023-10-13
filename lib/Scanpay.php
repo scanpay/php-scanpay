@@ -129,11 +129,21 @@ class Scanpay
         throw new \Exception('Invalid response from server');
     }
 
+    public function parsePing(string $body, string $signature): array
+    {
+        $checksum = base64_encode(hash_hmac('sha256', $body, $this->apikey, true));
+        if (hash_equals($checksum, $signature)) {
+            $o = json_decode($body, true);
+            if ($o !== null && isset($o['seq']) && is_int($o['seq']) && isset($o['shopid'])) {
+                return $o;
+            }
+        }
+        throw new \Exception('invalid ping');
+    }
+
     // handlePing: Convert data to JSON and validate integrity
     public function handlePing(array $opts = []): array
     {
-        ignore_user_abort(true);
-
         if (isset($opts['signature'])) {
             $signature = $opts['signature'];
         } elseif (isset($_SERVER['HTTP_X_SIGNATURE'])) {
@@ -141,30 +151,11 @@ class Scanpay
         } else {
             throw new \Exception('missing ping signature');
         }
-
         $body = isset($opts['body']) ? $opts['body'] : file_get_contents('php://input');
         if ($body === false) {
             throw new \Exception('unable to get ping body');
         }
-
-        $checksum = base64_encode(hash_hmac('sha256', $body, $this->apikey, true));
-
-        if (!hash_equals($checksum, $signature)) {
-            throw new \Exception('invalid ping signature');
-        }
-
-        $obj = @json_decode($body, true);
-        if ($obj === null) {
-            throw new \Exception('invalid json from Scanpay server');
-        }
-
-        if (
-            isset($obj['seq']) && is_int($obj['seq']) &&
-            isset($obj['shopid']) && is_int($obj['shopid'])
-        ) {
-            return $obj;
-        }
-        throw new \Exception('missing fields in Scanpay response');
+        return $this->parsePing($body, $signature);
     }
 
     public function capture(int $trnid, array $data, array $opts = []): array
