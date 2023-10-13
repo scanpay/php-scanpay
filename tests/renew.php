@@ -2,7 +2,7 @@
 
 /*
     Docs: https://docs.scanpay.dk/synchronization
-    help@scanpay.dk || irc.libera.chat:6697 #scanpay
+    support@scanpay.dk || irc.scanpay.dev:6697 #support
 */
 require dirname(__FILE__)  . '/../lib/Scanpay.php';
 
