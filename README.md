@@ -39,7 +39,7 @@ $scanpay = new Scanpay\Scanpay('API key');
 
 The API documentation is available [here](https://docs.scanpay.dev/). Most methods accept an optional per-request array with [options](#options), referred to as `$options`.
 
-#### newURL(Array, $options)
+#### newURL(Array, $options): String
 
 Create a link to our hosted payment window ([docs](https://docs.scanpay.dev/payment-link) \| [example](tests/newURL.php)).
 
@@ -56,7 +56,7 @@ $order = [
 $paymentLink = $scanpay->newURL($order, $options);
 ```
 
-#### seq(Integer, $options)
+#### seq(Integer, $options): Array
 
 Fetch changes after a specified sequence number ([docs](https://docs.scanpay.dev/synchronization#sequence-request) \| [example](tests/seq.php)).
 
@@ -69,7 +69,7 @@ foreach ($arr['changes'] as $change) {
 $localSeq = (int) $arr.seq;
 ```
 
-#### parsePing(String, String)
+#### parsePing(String, String): Array
 
 Validate and parse scanpay pings ([docs](https://docs.scanpay.dev/synchronization#ping-service) \| [example](tests/parsePing.php)).
 
@@ -80,7 +80,7 @@ $ping = $scanpay->parsePing(
 );
 ```
 
-#### capture(Integer, Array, $options)
+#### capture(Integer, Array, $options): Array
 
 Capture an authorized amount from a transaction ([docs](https://docs.scanpay.dev/transactions) \| [example](tests/charge.php#L66-L69)).<br>The `index` is the number of actions recorded by your system, and it's a security measure against double captures.
 
@@ -95,7 +95,7 @@ $data = [
 $scanpay->capture($trnID, $data, $options);
 ```
 
-#### charge(Integer, Array, $options)
+#### charge(Integer, Array, $options): Array
 
 Charge a subscriber ([docs](https://docs.scanpay.dev/subscriptions/charge-subscriber) \| [example](tests/charge.php)).
 
@@ -113,7 +113,7 @@ $charge = [
 $scanpay->charge($subscriberid, $charge, $options);
 ```
 
-#### renew(Integer, Array, $options)
+#### renew(Integer, Array, $options): String
 
 Create a link to renew the payment method for a subscriber. ([docs](https://docs.scanpay.dev/subscriptions/renew-subscriber) \| [example](tests/renew.php)).
 
