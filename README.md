@@ -82,7 +82,7 @@ $ping = $scanpay->parsePing(
 
 #### capture(Integer, Array, $options)
 
-Capture an authorized amount from a transaction. `index` is the number of actions recorded by your system, and it's a security measure against double captures.
+Capture an authorized amount from a transaction ([docs](https://docs.scanpay.dev/transactions) \| [example](tests/charge.php#L66-L69)).<br>The `index` is the number of actions recorded by your system, and it's a security measure against double captures.
 
 ```php
 $order = (arr) $yourDB.getOrder('order_184');
