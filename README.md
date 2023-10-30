@@ -6,7 +6,7 @@
 
 The Scanpay PHP client library provides convenient and simplified access to the Scanpay API from programs written in PHP. The library is developed and maintained by Scanpay in Denmark.
 
-If you have any questions, concerns or ideas, please do not hesitate to e-mail us at [support@scanpay.dk](mailto:support@scanpay.dk). Feel free to join our IRC server `irc.scanpay.dev:6697` or chat with us at [chat.scanpay.dev](https://chat.scanpay.dev).
+If you have any questions, concerns or ideas, please do not hesitate to e-mail us at [support@scanpay.dk](mailto:support@scanpay.dk). Feel free to join our IRC server `irc.scanpay.dev:6697 #support` or chat with us at [chat.scanpay.dev](https://chat.scanpay.dev).
 
 ## Requirements
 
