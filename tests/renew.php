@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Docs: https://docs.scanpay.dk/synchronization
+    Docs: https://docs.scanpay.dev/subscriptions/renew-subscriber
     support@scanpay.dk || irc.scanpay.dev:6697 #support
 */
 require dirname(__FILE__)  . '/../lib/Scanpay.php';
@@ -19,7 +19,7 @@ $options = [
 $subscriberid = 5;
 
 $data = [
-    'successurl' => 'https://docs.test.scanpay.dk/subscriptions/renew-subscriber',
+    'successurl' => 'https://docs.scanpay.dev/subscriptions/renew-subscriber',
     'language'   => 'da',
     'lifetime'   => '1h',
 ];

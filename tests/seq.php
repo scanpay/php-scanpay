@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Docs: https://docs.scanpay.dk/synchronization
+    Docs: https://docs.scanpay.dev/synchronization
     support@scanpay.dk || irc.scanpay.dev:6697 #support
 */
 require dirname(__FILE__)  . '/../lib/Scanpay.php';

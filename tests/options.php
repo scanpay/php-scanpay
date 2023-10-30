@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Docs: https://docs.scanpay.dk/payment-link
+    Docs: https://docs.scanpay.dev/payment-link
     support@scanpay.dk || irc.scanpay.dev:6697 #support
 */
 require dirname(__FILE__)  . '/../lib/Scanpay.php';
@@ -34,7 +34,7 @@ $options = [
 $order = [
     'orderid'    => 'a766409',
     'language'   => 'da',
-    'successurl' => 'https://docs.scanpay.dk/payment-link',
+    'successurl' => 'https://docs.scanpay.dev/payment-link',
     'items'    => [
         [
             'name'     => 'Pink Floyd: The Dark Side Of The Moon',

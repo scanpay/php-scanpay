@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
-    Docs: https://docs.scanpay.dev/subscriptions/
+    Docs: https://docs.scanpay.dev/subscriptions/charge-subscriber
     support@scanpay.dk || irc.scanpay.dev:6697 #support
 */
 require dirname(__FILE__)  . '/../lib/Scanpay.php';

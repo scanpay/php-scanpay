@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Docs: https://docs.scanpay.dk/subscriptions/
+    Docs: https://docs.scanpay.dev/subscriptions/create-subscriber
     support@scanpay.dk || irc.scanpay.dev:6697 #support
 */
 require dirname(__FILE__)  . '/../lib/Scanpay.php';
@@ -18,7 +18,7 @@ $options = [
 
 $order = [
     'language'   => 'da',
-    'successurl' => 'https://docs.scanpay.dk/payment-link',
+    'successurl' => 'https://docs.scanpay.dev/subscriptions/create-subscriber',
     'subscriber'    => [
         'ref' => 'sub13991',
     ],
