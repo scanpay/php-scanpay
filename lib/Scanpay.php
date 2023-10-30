@@ -65,7 +65,7 @@ class Scanpay
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2TLS,
             CURLOPT_TIMEOUT => 120,
             CURLOPT_DNS_CACHE_TIMEOUT => 180,
-            CURLOPT_DNS_SHUFFLE_ADDRESSES => 1,
+            //CURLOPT_DNS_SHUFFLE_ADDRESSES => 1,
         ];
         if (isset($data)) {
             $curlopts[CURLOPT_CUSTOMREQUEST] = 'POST';
