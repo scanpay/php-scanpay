@@ -56,19 +56,16 @@ class Scanpay
 
         $curlopts = [
             CURLOPT_URL => 'https://' . ($opts['hostname'] ?? 'api.scanpay.dk') . $path,
-            CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array_values($headers),
             CURLOPT_VERBOSE => $opts['debug'] ?? 0,
             CURLOPT_TCP_KEEPALIVE => 1, // TODO: CURLOPT_TCP_KEEPINTVL & CURLOPT_TCP_KEEPIDLE
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_CONNECTTIMEOUT => 20,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2TLS,
             CURLOPT_TIMEOUT => 120,
             CURLOPT_DNS_CACHE_TIMEOUT => 180,
             //CURLOPT_DNS_SHUFFLE_ADDRESSES => 1,
         ];
         if (isset($data)) {
-            $curlopts[CURLOPT_CUSTOMREQUEST] = 'POST';
             $curlopts[CURLOPT_POSTFIELDS] = json_encode($data, JSON_UNESCAPED_SLASHES);
             if ($curlopts[CURLOPT_POSTFIELDS] === false) {
                 throw new \Exception('Failed to JSON encode request to Scanpay: ' . json_last_error_msg());
@@ -83,6 +80,7 @@ class Scanpay
                 $curlopts[$key] = $val;
             }
         }
+        curl_reset($this->ch);
         curl_setopt_array($this->ch, $curlopts);
         $result = curl_exec($this->ch);
         if ($result === false) {
