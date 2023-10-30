@@ -24,7 +24,7 @@ class Scanpay
         $this->opts = $opts;
         $this->headers = [
             'authorization' => 'Authorization: Basic ' . base64_encode($apikey),
-            'x-sdk' => 'X-SDK: PHP-2.0.0/' . PHP_VERSION,
+            'x-sdk' => 'X-SDK: PHP-2.1.0/' . PHP_VERSION,
             'content-type' => 'Content-Type: application/json',
         ];
         if (isset($opts['headers'])) {
